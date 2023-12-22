@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {height, width} from '../components/Diemenstions';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, {TrackType} from 'react-native-track-player';
 import {setupPlayer} from '../components/Setup';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import {StackActions, useNavigation} from '@react-navigation/native';
@@ -133,16 +133,16 @@ const Detials = props => {
           Titel = item.Title;
           track = {
             url: `asset:/files/${item.Sound}`, // Load media from the file system
-            title: 'Ice Age',
-            artist: 'deadmau5',
+            title: Titel,
+            artist: 'eFlashApps',
             // Load artwork from the file system:
             artwork: `asset:/files/${item.Sound}`,
             duration: null,
           };
           track2 = {
             url: `asset:/files/${item.ActualSound}`, // Load media from the file system
-            title: 'Ice Age',
-            artist: 'deadmau5',
+            title: Titel,
+            artist: 'eFlashApps',
             // Load artwork from the file system:
             artwork: `asset:/files/${item.Sound}`,
             duration: null,
@@ -197,7 +197,7 @@ const Detials = props => {
             onPress={async () => {
               await TrackPlayer.reset();
               disapatch(addPagable(false));
-              navigation.dispatch(StackActions.popToTop());
+              navigation.reset({index: 0, routes: [{name: 'home'}]});
             }}>
             <Image
               style={styles.icon}

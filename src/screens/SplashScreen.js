@@ -6,7 +6,7 @@ const SplashScreen = () => {
   const navigation = useNavigation();
   useEffect(() => {
     setTimeout(() => {
-      navigation.dispatch(StackActions.replace('home'));
+      navigation.reset({index: 0, routes: [{name: 'home'}]});
     }, 2000);
   });
   return (

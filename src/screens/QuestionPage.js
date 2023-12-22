@@ -57,6 +57,7 @@ const QuestionPage = props => {
   const [wrong2, setWrong2] = useState(false);
   const [wrong3, setWrong3] = useState(false);
   const [count, setCount] = useState(1);
+  const [wrong, setWrong] = useState([]);
 
   const data = useSelector(state => state.Items);
   const showAdd = () => {
@@ -82,15 +83,15 @@ const QuestionPage = props => {
     let arr = [
       (track = {
         url: require('../../asset2/clickon.mp3'), // Load media from the file system
-        title: 'Ice Age',
-        artist: 'deadmau5',
+        title: item.Title,
+        artist: 'eFlashApps',
 
         duration: null,
       }),
       (track2 = {
         url: `asset:/files/${item.Sound}`, // Load media from the file system
-        title: 'Ice Age',
-        artist: 'deadmau5',
+        title: item.Title,
+        artist: 'eFlashApps',
         // Load artwork from the file system:
         //  artwork: require('../../asset2/clickon.mp3'),
         duration: null,
@@ -124,24 +125,11 @@ const QuestionPage = props => {
     });
 
     if (indexx === x) {
-      if (x != 0) {
-        setWrong0(true);
-      }
-      if (x != 1) {
-        setWrong1(true);
-      }
-      if (x != 2) {
-        setWrong2(true);
-      }
-      if (x != 3) {
-        setWrong3(true);
-      }
+      const arr = [0, 1, 2, 3].filter(item => item != x);
+      setWrong(arr);
       await TrackPlayer.add(track2);
       setTimeout(() => {
-        setWrong0(false);
-        setWrong1(false);
-        setWrong2(false);
-        setWrong3(false);
+        setWrong([]);
         const shuffledData = data
           .slice()
           .sort(() => Math.random() - 0.5)
@@ -152,17 +140,16 @@ const QuestionPage = props => {
       await TrackPlayer.add(traxck);
       switch (indexx) {
         case 0:
-          setWrong0(true);
+          setWrong([...wrong, 0]);
           break;
         case 1:
-          setWrong1(true);
-          console.log(indexx);
+          setWrong([...wrong, 1]);
           break;
         case 2:
-          setWrong2(true);
+          setWrong([...wrong, 2]);
           break;
         case 3:
-          setWrong3(true);
+          setWrong([...wrong, 3]);
           break;
       }
     }
@@ -210,7 +197,7 @@ const QuestionPage = props => {
             onPress={async () => {
               await TrackPlayer.reset();
               disapatch(addPagable(false));
-              navigation.dispatch(StackActions.popToTop());
+              navigation.reset({index: 0, routes: [{name: 'home'}]});
             }}>
             <Image
               style={styles.icon}
@@ -245,60 +232,27 @@ const QuestionPage = props => {
             keyExtractor={item => item.ID}
             renderItem={({item, index}) => {
               return (
-                <View style={[!tablet ? styles.mobileView : styles.tabView]}>
+                <TouchableOpacity
+                  onPress={() => up(index)}
+                  style={[!tablet ? styles.mobileView : styles.tabView]}>
                   <Image
                     style={{height: '100%', width: '100%'}}
                     source={{uri: `asset:/files/${item.Image}`}}
                   />
-                </View>
+                  {wrong.includes(index) ? (
+                    <Image
+                      style={{
+                        height: '100%',
+                        width: '100%',
+                        position: 'absolute',
+                      }}
+                      source={require('../../Assets4/wrongselection.png')}
+                    />
+                  ) : null}
+                </TouchableOpacity>
               );
             }}
           />
-        </View>
-        <View style={[styles.worgImgContainer, {top: !tablet ? '17%' : '13%'}]}>
-          <TouchableOpacity
-            onPress={() => up(0)}
-            style={[!tablet ? styles.wrongImg1 : styles.tabWrong1]}>
-            {wrong0 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => up(1)}
-            style={[!tablet ? styles.wrongImg2 : styles.tabWrong2]}>
-            {wrong1 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.worgImgContainer2}>
-          <TouchableOpacity
-            onPress={() => up(2)}
-            style={[!tablet ? styles.wrongImg1 : styles.tabWrong1]}>
-            {wrong2 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => up(3)}
-            style={[!tablet ? styles.wrongImg2 : styles.tabWrong2]}>
-            {wrong3 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
         </View>
       </View>
       <View style={{bottom: 0, borderWidth: 0}}>
@@ -367,7 +321,7 @@ const styles = StyleSheet.create({
   },
   mobileView: {
     height: hp(30),
-    width: hp(24),
+    width: hp(22),
     marginHorizontal: wp(1.5),
     marginVertical: hp(3),
     alignItems: 'center',
