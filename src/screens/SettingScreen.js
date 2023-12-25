@@ -1,19 +1,34 @@
-import {View, Text, Image, TouchableOpacity, BackHandler} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  BackHandler,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import {height, width} from '../components/Diemenstions';
-import {StyleSheet} from 'react-native';
-import {setupPlayer} from '../components/Setup';
+import React, {useEffect, useState} from 'react';
+import Switch from '../components/Switch';
+import {useDispatch, useSelector} from 'react-redux';
 import TrackPlayer from 'react-native-track-player';
-import {RightVOid, WrongVoid} from '../components/WrongVoid';
+import {QuestionMode} from '../reduxToolkit/Slice3';
+import {addSetting} from '../reduxToolkit/Slice2';
 import {StackActions, useNavigation} from '@react-navigation/native';
-import {useIsFocused} from '@react-navigation/native';
+import Header from '../components/Header';
+import {addCancleble} from '../reduxToolkit/Slice5';
 import {addPagable} from '../reduxToolkit/Slicer6';
+var SQLite = require('react-native-sqlite-storage');
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+const db = SQLite.openDatabase({
+  name: 'eFlashEngishinappnew.db',
+  createFromLocation: 1,
+});
 import {isTablet} from 'react-native-device-info';
 import {
   TestIds,
@@ -23,19 +38,112 @@ import {
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
-const authId = Addsid.Interstitial;
-const requestOption = {
-  requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing'],
-};
-const QuestionPage = props => {
-  const interstitial = InterstitialAd.createForAdRequest(authId, requestOption);
+const SettingScreen = props => {
+  const pr = props.route.params.pr;
+
+  const muted = useSelector(state => state.sound);
+  const canlable = useSelector(state => state.cancle);
   const tablet = isTablet();
-  const disapatch = useDispatch();
+  const [mute, setMute] = useState(muted);
+  const quesion = useSelector(state => state.question);
+  const setting = useSelector(state => state.setting);
+  const backSound = useSelector(state => state.backsound);
+  console.log('thisi sfrom setting', backSound);
+  const Navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [togleSwitch, setToggleSwich] = useState({
+    ActualVoice: setting.ActualVoice,
+    English: setting.English,
+    RandomOrder: setting.RandomOrder,
+    Swipe: setting.Swipe,
+    Videos: setting.Videos,
+    Voice: setting.Voice,
+  });
+  const [questionMode, setquestion] = useState(quesion);
+  const handleSwitch = (name, value) => {
+    if (questionMode) {
+      alert('This setting is disabled when quesion mode is enabled');
+    } else {
+      setToggleSwich(prev => ({...prev, [name]: !value}));
+    }
+  };
+  const Save = async () => {
+    updateSettings();
+    dispatch(QuestionMode(questionMode));
+    dispatch(addSetting(togleSwitch));
+    if (pr === 'question') {
+      if (!questionMode) {
+        Navigation.dispatch(StackActions.replace('details'));
+        dispatch({
+          type: 'backSoundFromquestions/playWhenThePage',
+          fromDetails: false,
+          fromQuestion: false,
+        });
+      } else {
+        await TrackPlayer.reset();
+        Navigation.dispatch(StackActions.pop());
+        dispatch({
+          type: 'backSoundFromquestions/playWhenThePage',
+          fromDetails: togleSwitch.Voice,
+          fromQuestion: questionMode,
+        });
+      }
+    } else if (pr === 'details') {
+      if (questionMode) {
+        Navigation.dispatch(StackActions.replace('question'));
+        dispatch({
+          type: 'backSoundFromquestions/playWhenThePage',
+          fromDetails: false,
+          fromQuestion: false,
+        });
+      } else {
+        Navigation.dispatch(StackActions.pop());
+        dispatch({
+          type: 'backSoundFromquestions/playWhenThePage',
+          fromDetails: togleSwitch.Voice,
+          fromQuestion: questionMode,
+        });
+      }
+    } else {
+      Navigation.reset({index: 0, routes: [{name: 'home'}]});
+    }
+    await TrackPlayer.reset();
+  };
+  //SELECT * FROM tbl_settings
+
+  const updateSettings = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE  tbl_settings set ActualVoice=?,English=?,' +
+          'Question=?,RandomOrder=?,Swipe=?,Videos=?,' +
+          'Voice=? WHERE id=1',
+        [
+          togleSwitch.ActualVoice,
+          togleSwitch.English,
+          questionMode,
+          togleSwitch.RandomOrder,
+          togleSwitch.Swipe,
+          togleSwitch.Videos,
+          togleSwitch.Voice,
+        ],
+        (tx, results) => {
+          console.log('Query completed');
+        },
+        err => {
+          console.log(err);
+          console.log('erorr');
+        },
+      );
+    });
+  };
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
-      navigation.dispatch(StackActions.popToTop());
+      if (pr == 'home') {
+        Navigation.reset({index: 0, routes: [{name: 'home'}]});
+      } else {
+        Navigation.goBack();
+      }
       return true;
     };
 
@@ -46,262 +154,113 @@ const QuestionPage = props => {
 
     return () => backHandler.remove();
   }, []);
-
-  const navigation = useNavigation();
-  const canlable = useSelector(state => state.cancle);
-  const page = useSelector(state => state.page);
-  const [song, setSong] = useState();
-  const [x, setX] = useState(0);
-  const [wrong0, setWrong0] = useState(false);
-  const [wrong1, setWrong1] = useState(false);
-  const [wrong2, setWrong2] = useState(false);
-  const [wrong3, setWrong3] = useState(false);
-  const [count, setCount] = useState(1);
-
-  const data = useSelector(state => state.Items);
-  const showAdd = () => {
-    const unsubscribe = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        interstitial.show();
-      },
-    );
-    interstitial.load();
-    return unsubscribe;
-  };
-
-  const IsPlay = async (item, index) => {
-    //  console.log('isPlay is fired')
-    let isReady = await setupPlayer();
-    await TrackPlayer.reset();
-    setCount(count + 1);
-
-    if (count > 8) {
-      setCount(0), showAdd();
-    }
-    let arr = [
-      (track = {
-        url: require('../../asset2/clickon.mp3'), // Load media from the file system
-        title: 'Ice Age',
-        artist: 'deadmau5',
-
-        duration: null,
-      }),
-      (track2 = {
-        url: `asset:/files/${item.Sound}`, // Load media from the file system
-        title: 'Ice Age',
-        artist: 'deadmau5',
-        // Load artwork from the file system:
-        //  artwork: require('../../asset2/clickon.mp3'),
-        duration: null,
-      }),
-    ];
-    if (isReady) {
-      await TrackPlayer.add(arr);
-      await TrackPlayer.play();
-    }
-
-    setSong(arr);
-    console.log('called');
-  };
-
-  const [rendomdat, setrandomDat] = useState(data.slice(0, 4));
-  const up = async indexx => {
-    await TrackPlayer.reset();
-    console.log(x);
-
-    let traxck;
-    let track2;
-    WrongVoid.sort(() => Math.random() - 0.5).map((item, index) => {
-      if (index === 1) {
-        traxck = item;
-      }
-    });
-    RightVOid.sort(() => Math.random() - 0.5).map((item, index) => {
-      if (index === 1) {
-        track2 = item;
-      }
-    });
-
-    if (indexx === x) {
-      if (x != 0) {
-        setWrong0(true);
-      }
-      if (x != 1) {
-        setWrong1(true);
-      }
-      if (x != 2) {
-        setWrong2(true);
-      }
-      if (x != 3) {
-        setWrong3(true);
-      }
-      await TrackPlayer.add(track2);
-      setTimeout(() => {
-        setWrong0(false);
-        setWrong1(false);
-        setWrong2(false);
-        setWrong3(false);
-        const shuffledData = data
-          .slice()
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 4);
-        setrandomDat(shuffledData);
-      }, 2000);
-    } else {
-      await TrackPlayer.add(traxck);
-      switch (indexx) {
-        case 0:
-          setWrong0(true);
-          break;
-        case 1:
-          setWrong1(true);
-          console.log(indexx);
-          break;
-        case 2:
-          setWrong2(true);
-          break;
-        case 3:
-          setWrong3(true);
-          break;
-      }
-    }
-
-    await TrackPlayer.play();
-  };
-
-  useEffect(() => {
-    run();
-  }, [rendomdat]);
-  console.log('this is canclelbe', canlable);
-
-  const run = async () => {
-    await TrackPlayer.reset();
-    let y = Math.floor(Math.random() * 4);
-    rendomdat.map((item, index) => {
-      if (index === y) {
-        IsPlay(item, index);
-        setX(y);
-      }
-    });
-  };
-  useEffect(() => {
-    setTimeout(() => {
-      page ? sound() : null;
-    }, 500);
-  }, [canlable]);
-
-  const sound = async () => {
-    await TrackPlayer.reset();
-    await TrackPlayer.add(song);
-    await TrackPlayer.play();
-  };
-
-  const gotoSettings = async () => {
-    await TrackPlayer.reset();
-    disapatch(addPagable(false));
-    navigation.dispatch(StackActions.push('setting', {pr: 'question'}));
-  };
   return (
-    <View style={{height: '100%', width: '100%'}}>
-      <View style={{flex: 1, backgroundColor: 'white'}}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={async () => {
-              await TrackPlayer.reset();
-              disapatch(addPagable(false));
-              navigation.dispatch(StackActions.popToTop());
-            }}>
-            <Image
-              style={styles.icon}
-              source={require('../../Assets4/btnhome_normal.png')}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => sound()}>
-            <Image
-              style={styles.btn2}
-              source={require('../../Assets4/btnrepeat_normal.png')}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={async () => {
-              gotoSettings();
-            }}>
-            <Image
-              style={styles.icon}
-              source={require('../../Assets4/btnsetting_normal.png')}
-            />
-          </TouchableOpacity>
+    <ImageBackground
+      style={{flex: 1}}
+      source={require('../../Assets4/settingscreen.png')}>
+      <Header onPress2={() => setMute(!mute)} mute={mute} />
+      <ScrollView>
+        <View
+          style={[
+            styles.settingContainer,
+            {marginTop: tablet ? '25%' : '30%'},
+          ]}>
+          <ImageBackground
+            style={{flex: 1}}
+            source={require('../../Assets4/settingpagebase.png')}>
+            <View style={{marginTop: tablet ? '7%' : '8%', marginLeft: '5%'}}>
+              <Switch
+                text="Ouestion mode"
+                style={styles.sw}
+                onPress={() => {
+                  setquestion(!questionMode), setToggleSwich(pre => false);
+                }}
+                onFocus={() => {
+                  console.log('rrrj');
+                }}
+                sw={questionMode}
+              />
+              <Switch
+                text="Voice"
+                style={styles.tx}
+                onPress={() => handleSwitch('Voice', togleSwitch.Voice)}
+                sw={togleSwitch.Voice}
+              />
+              <Switch
+                text="Sound"
+                style={styles.tx}
+                onPress={() =>
+                  handleSwitch('ActualVoice', togleSwitch.ActualVoice)
+                }
+                sw={togleSwitch.ActualVoice}
+              />
+              <Switch
+                text="Rendom Order"
+                style={styles.tx}
+                onPress={() =>
+                  handleSwitch('RandomOrder', togleSwitch.RandomOrder)
+                }
+                sw={togleSwitch.RandomOrder}
+              />
+              <Switch
+                text="Swipe"
+                style={styles.tx}
+                onPress={() => handleSwitch('Swipe', togleSwitch.Swipe)}
+                sw={togleSwitch.Swipe}
+              />
+              <Switch
+                text="English Text"
+                style={styles.tx}
+                onPress={() => handleSwitch('English', togleSwitch.English)}
+                sw={togleSwitch.English}
+              />
+              {/* <Switch
+              text="Video"
+              style={styles.tx}
+              onPress={() => {
+                handleSwitch('Videos', false);
+              }}
+              sw={togleSwitch.Videos}
+            /> */}
+            </View>
+          </ImageBackground>
         </View>
         <View
           style={{
-            marginTop: tablet ? '5%' : '15%',
-            alignSelf: 'center',
-            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginHorizontal: '10%',
           }}>
-          <FlatList
-            data={rendomdat}
-            numColumns={2}
-            keyExtractor={item => item.ID}
-            renderItem={({item, index}) => {
-              return (
-                <View style={[!tablet ? styles.mobileView : styles.tabView]}>
-                  <Image
-                    style={{height: '100%', width: '100%'}}
-                    source={{uri: `asset:/files/${item.Image}`}}
-                  />
-                </View>
-              );
-            }}
-          />
-        </View>
-        <View style={[styles.worgImgContainer, {top: !tablet ? '17%' : '13%'}]}>
           <TouchableOpacity
-            onPress={() => up(0)}
-            style={[!tablet ? styles.wrongImg1 : styles.tabWrong1]}>
-            {wrong0 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
+            onPress={async () => {
+              {
+                if (pr == 'home') {
+                  Navigation.reset({index: 0, routes: [{name: 'home'}]});
+                } else {
+                  await TrackPlayer.reset();
+                  dispatch({
+                    type: 'backSoundFromquestions/playWhenThePage',
+                    fromDetails: togleSwitch.Voice,
+                    fromQuestion: quesion,
+                  });
+                  Navigation.goBack();
+                }
+              }
+            }}>
+            <Image
+              style={{height: hp(6), width: wp(30)}}
+              source={require('../../Assets4/btncancel_normal.png')}
+            />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => up(1)}
-            style={[!tablet ? styles.wrongImg2 : styles.tabWrong2]}>
-            {wrong1 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
+          <TouchableOpacity onPress={() => Save()}>
+            <Image
+              style={{height: hp(6), width: wp(30)}}
+              source={require('../../Assets4/btnsave_normal.png')}
+            />
           </TouchableOpacity>
         </View>
-
-        <View style={styles.worgImgContainer2}>
-          <TouchableOpacity
-            onPress={() => up(2)}
-            style={[!tablet ? styles.wrongImg1 : styles.tabWrong1]}>
-            {wrong2 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => up(3)}
-            style={[!tablet ? styles.wrongImg2 : styles.tabWrong2]}>
-            {wrong3 && (
-              <Image
-                style={{height: '100%', width: '100%'}}
-                source={require('../../Assets4/wrongselection.png')}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={{bottom: 0, borderWidth: 0}}>
+      </ScrollView>
+      <View style={{position: 'relative', bottom: 0}}>
         <GAMBannerAd
           unitId={Addsid.BANNER}
           sizes={[BannerAdSize.FULL_BANNER]}
@@ -310,85 +269,29 @@ const QuestionPage = props => {
           }}
         />
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
-export default QuestionPage;
+export default SettingScreen;
 const styles = StyleSheet.create({
-  icon: {
-    height: hp(7),
-    width: hp(7),
-    margin: '1%',
+  settingContainer: {
+    borderWidth: 2,
+    marginTop: '40%',
+    height: height / 1.9,
+    margin: '5%',
   },
-  Titel: {
-    fontSize: 25,
+  sw: {
+    alignSelf: 'flex-end',
+    marginRight: '5%',
+    fontSize: wp(5),
     fontWeight: 'bold',
-    color: 'white',
-    alignSelf: 'center',
+    color: 'black',
   },
-  header: {
-    height: height / 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: 'grey',
-  },
-  btn2: {
-    height: hp(6.5),
-    width: hp(6.5),
-    alignSelf: 'center',
-    marginTop: '15%',
-  },
-  wrongImg1: {
-    height: hp(33),
-    width: hp(24),
-    marginHorizontal: wp(1.5),
-    marginVertical: hp(3),
-    // borderWidth: 4,
-    alignItems: 'center',
-  },
-  wrongImg2: {
-    height: hp(33),
-    width: hp(24),
-    marginHorizontal: wp(1.5),
-    marginVertical: hp(3),
-    // /  borderWidth: 4,
-    alignItems: 'center',
-  },
-  worgImgContainer: {
-    flexDirection: 'row',
-    position: 'absolute',
-    top: '16.7%',
-  },
-  worgImgContainer2: {
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: '1%',
-  },
-  mobileView: {
-    height: hp(30),
-    width: hp(24),
-    marginHorizontal: wp(1.5),
-    marginVertical: hp(3),
-    alignItems: 'center',
-  },
-  tabView: {
-    height: hp(38),
-    width: hp(27),
-    marginHorizontal: hp(1.5),
-    // borderWidth: 4,
-    marginVertical: hp(1),
-  },
-  tabWrong2: {
-    height: hp(40),
-    width: hp(29),
-    marginLeft: hp(1),
-    marginVertical: hp(1),
-  },
-  tabWrong1: {
-    height: hp(40),
-    width: hp(29),
-    marginLeft: hp(4),
-    marginVertical: hp(1),
+  tx: {
+    alignSelf: 'flex-end',
+    marginRight: '5%',
+    fontSize: wp(5),
+    color: 'black',
   },
 });

@@ -73,10 +73,6 @@ const MyStack = () => {
         <Stack.Screen name="setting" component={SettingScreen} />
         <Stack.Screen name="slash" component={SplashScreen} />
         <Stack.Screen name="next" component={NextScreen} />
-        {/* <Stack.Screen
-          name="InterstitialAdsScreen"
-          component={InterstitialAdsScreen}
-        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

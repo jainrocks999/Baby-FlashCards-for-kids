@@ -1,4 +1,4 @@
-import {StyleSheet, ImageBackground} from 'react-native';
+import {StyleSheet, ImageBackground, Vibration, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import HorizontalList from '../components/HorizontalList';
@@ -55,17 +55,21 @@ const Home = () => {
       <Header
         onPress2={() => setMute(!mute)}
         mute={mute}
-        onPress={() => Navigation.navigate('setting', {pr: 'home'})}
+        onPress={() => {
+          Navigation.navigate('setting', {pr: 'home'});
+        }}
         home
       />
       <HorizontalList items={MyData} />
-      <GAMBannerAd
-        unitId={Addsid.BANNER}
-        sizes={[BannerAdSize.FULL_BANNER]}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-      />
+      <View style={{position: 'relative', bottom: 0}}>
+        <GAMBannerAd
+          unitId={Addsid.BANNER}
+          sizes={[BannerAdSize.FULL_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+      </View>
     </ImageBackground>
   );
 };

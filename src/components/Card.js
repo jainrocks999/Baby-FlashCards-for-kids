@@ -17,11 +17,12 @@ const Card = ({item, onPress}) => {
         styles.container,
         item?.Category == 'link' || item?.Category == 'link2'
           ? {height: tablet ? hp(28) : hp(22), width: wp(45)}
-          : {height: tablet ? hp(25) : hp(20)},
+          : {height: tablet ? hp(25) : 140},
       ]}
       activeOpacity={0.8}>
       <Image
-        style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+        style={{height: '100%', width: '100%'}}
+        resizeMode="contain"
         source={item.Image}
       />
     </TouchableOpacity>
@@ -32,11 +33,12 @@ export default Card;
 
 const styles = StyleSheet.create({
   container: {
-    // borderWidth:1,
-    height: hp(20),
-    width: wp(45),
-    margin: '2%',
+    // borderWidth: 1,
+    width: '45%',
+    // mrh: '2%',
+    marginHorizontal: '2%',
+    marginVertical: '1%',
+
     borderRadius: 20,
-    overflow: 'hidden',
   },
 });

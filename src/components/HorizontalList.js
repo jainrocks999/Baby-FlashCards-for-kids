@@ -5,6 +5,10 @@ import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {addData} from '../reduxToolkit/Slice';
 import {addCatNext} from '../reduxToolkit/Slice7';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 var SQLite = require('react-native-sqlite-storage');
 const db = SQLite.openDatabase({
   name: 'eFlashEngishinappnew.db',
@@ -15,6 +19,11 @@ const HorizontalList = ({items}) => {
   const data = useSelector(state => state.Items);
   const getData = (cat, id) => {
     console.log('run');
+    disapatch({
+      type: 'backSoundFromquestions/playWhenThePage',
+      fromDetails: false,
+      fromQuestion: false,
+    });
     if (cat != 'link' && cat != 'link2') {
       db.transaction(tx => {
         tx.executeSql(
@@ -54,7 +63,12 @@ const HorizontalList = ({items}) => {
   const wr = useSelector(state => state.question);
   const navigation = useNavigation();
   return (
-    <View style={{flex: 1, alignItems: 'center'}}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        marginLeft: '2%',
+      }}>
       <FlatList
         scrollEnabled={true}
         numColumns={2}

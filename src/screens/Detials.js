@@ -37,15 +37,15 @@ const requestOption = {
 const Detials = props => {
   const tablet = isTablet();
   const disapatch = useDispatch();
-  const canlable = useSelector(state => state.cancle);
-  const page = useSelector(state => state.page);
+  const backSound = useSelector(state => state.backsound);
+  console.log('this is backdound', backSound);
   const interstitial = InterstitialAd.createForAdRequest(adUnit, requestOption);
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
       disapatch(addPagable(false));
 
-      navigation.dispatch(StackActions.popToTop());
+      navigation.reset({index: 0, routes: [{name: 'home'}]});
       return true;
     };
 
@@ -178,12 +178,22 @@ const Detials = props => {
   };
 
   useEffect(() => {
-    page ? paly() : null;
-  }, [canlable]);
+    if (backSound.fromDetails) {
+      paly();
+      disapatch({
+        type: 'backSoundFromquestions/playWhenThePage',
+        fromDetails: false,
+        fromQuestion: false,
+      });
+    }
+  }, [backSound.fromDetails == true]);
   const paly = async () => {
+    const isSetup = await setupPlayer();
     await TrackPlayer.reset();
     await TrackPlayer.add(Music);
-    await TrackPlayer.play();
+    if (isSetup) {
+      await TrackPlayer.play();
+    }
   };
 
   return (
@@ -196,7 +206,7 @@ const Detials = props => {
           <TouchableOpacity
             onPress={async () => {
               await TrackPlayer.reset();
-              disapatch(addPagable(false));
+
               navigation.reset({index: 0, routes: [{name: 'home'}]});
             }}>
             <Image
@@ -208,7 +218,11 @@ const Detials = props => {
           <TouchableOpacity
             onPress={async () => {
               await TrackPlayer.reset();
-              disapatch(addPagable(false));
+              disapatch({
+                type: 'backSoundFromquestions/playWhenThePage',
+                fromDetails: false,
+                fromQuestion: false,
+              });
               navigation.dispatch(
                 StackActions.push('setting', {pr: 'details'}),
               );

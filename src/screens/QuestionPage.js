@@ -1,4 +1,11 @@
-import {View, Text, Image, TouchableOpacity, BackHandler} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  BackHandler,
+  Alert,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
@@ -35,7 +42,7 @@ const QuestionPage = props => {
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
-      navigation.dispatch(StackActions.popToTop());
+      navigation.reset({index: 0, routes: [{name: 'home'}]});
       return true;
     };
 
@@ -48,17 +55,11 @@ const QuestionPage = props => {
   }, []);
 
   const navigation = useNavigation();
-  const canlable = useSelector(state => state.cancle);
-  const page = useSelector(state => state.page);
+  const backSound = useSelector(state => state.backsound);
   const [song, setSong] = useState();
   const [x, setX] = useState(0);
-  const [wrong0, setWrong0] = useState(false);
-  const [wrong1, setWrong1] = useState(false);
-  const [wrong2, setWrong2] = useState(false);
-  const [wrong3, setWrong3] = useState(false);
   const [count, setCount] = useState(1);
   const [wrong, setWrong] = useState([]);
-
   const data = useSelector(state => state.Items);
   const showAdd = () => {
     const unsubscribe = interstitial.addAdEventListener(
@@ -158,9 +159,8 @@ const QuestionPage = props => {
   };
 
   useEffect(() => {
-    run();
+    backSound.fromQuestion == false ? run() : null;
   }, [rendomdat]);
-  console.log('this is canclelbe', canlable);
 
   const run = async () => {
     await TrackPlayer.reset();
@@ -172,21 +172,36 @@ const QuestionPage = props => {
       }
     });
   };
+  let cn = 0;
   useEffect(() => {
-    setTimeout(() => {
-      page ? sound() : null;
-    }, 500);
-  }, [canlable]);
+    backSound.fromQuestion
+      ? setTimeout(() => {
+          sound();
+          disapatch({
+            type: 'backSoundFromquestions/playWhenThePage',
+            fromDetails: false,
+            fromQuestion: false,
+          });
+        }, 500)
+      : null;
+  }, [backSound.fromQuestion == true]);
 
   const sound = async () => {
+    const isSetup = await setupPlayer();
     await TrackPlayer.reset();
     await TrackPlayer.add(song);
-    await TrackPlayer.play();
+    if (isSetup) {
+      await TrackPlayer.play();
+    }
   };
 
   const gotoSettings = async () => {
     await TrackPlayer.reset();
-    disapatch(addPagable(false));
+    disapatch({
+      type: 'backSoundFromquestions/playWhenThePage',
+      fromDetails: false,
+      fromQuestion: false,
+    });
     navigation.dispatch(StackActions.push('setting', {pr: 'question'}));
   };
   return (
@@ -196,11 +211,12 @@ const QuestionPage = props => {
           <TouchableOpacity
             onPress={async () => {
               await TrackPlayer.reset();
-              disapatch(addPagable(false));
+
               navigation.reset({index: 0, routes: [{name: 'home'}]});
             }}>
             <Image
               style={styles.icon}
+              resizeMode="contain"
               source={require('../../Assets4/btnhome_normal.png')}
             />
           </TouchableOpacity>
@@ -233,7 +249,16 @@ const QuestionPage = props => {
             renderItem={({item, index}) => {
               return (
                 <TouchableOpacity
-                  onPress={() => up(index)}
+                  onPress={() => {
+                    up(index);
+                    if (backSound.fromQuestion) {
+                      disapatch({
+                        type: 'backSoundFromquestions/playWhenThePage',
+                        fromDetails: false,
+                        fromQuestion: false,
+                      });
+                    }
+                  }}
                   style={[!tablet ? styles.mobileView : styles.tabView]}>
                   <Image
                     style={{height: '100%', width: '100%'}}
