@@ -142,6 +142,11 @@ const SettingScreen = props => {
       if (pr == 'home') {
         Navigation.reset({index: 0, routes: [{name: 'home'}]});
       } else {
+        dispatch({
+          type: 'backSoundFromquestions/playWhenThePage',
+          fromDetails: togleSwitch.Voice,
+          fromQuestion: questionMode,
+        });
         Navigation.goBack();
       }
       return true;
@@ -233,29 +238,29 @@ const SettingScreen = props => {
           }}>
           <TouchableOpacity
             onPress={async () => {
-              {
-                if (pr == 'home') {
-                  Navigation.reset({index: 0, routes: [{name: 'home'}]});
-                } else {
-                  await TrackPlayer.reset();
-                  dispatch({
-                    type: 'backSoundFromquestions/playWhenThePage',
-                    fromDetails: togleSwitch.Voice,
-                    fromQuestion: quesion,
-                  });
-                  Navigation.goBack();
-                }
+              if (pr == 'home') {
+                Navigation.reset({index: 0, routes: [{name: 'home'}]});
+              } else {
+                await TrackPlayer.reset();
+                dispatch({
+                  type: 'backSoundFromquestions/playWhenThePage',
+                  fromDetails: togleSwitch.Voice,
+                  fromQuestion: quesion,
+                });
+                Navigation.goBack();
               }
             }}>
             <Image
               style={{height: hp(6), width: wp(30)}}
               source={require('../../Assets4/btncancel_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => Save()}>
             <Image
               style={{height: hp(6), width: wp(30)}}
               source={require('../../Assets4/btnsave_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
         </View>

@@ -224,6 +224,7 @@ const QuestionPage = props => {
             <Image
               style={styles.btn2}
               source={require('../../Assets4/btnrepeat_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -233,6 +234,7 @@ const QuestionPage = props => {
             <Image
               style={styles.icon}
               source={require('../../Assets4/btnsetting_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
         </View>
@@ -263,6 +265,7 @@ const QuestionPage = props => {
                   <Image
                     style={{height: '100%', width: '100%'}}
                     source={{uri: `asset:/files/${item.Image}`}}
+                    resizeMode="contain"
                   />
                   {wrong.includes(index) ? (
                     <Image
@@ -271,6 +274,7 @@ const QuestionPage = props => {
                         width: '100%',
                         position: 'absolute',
                       }}
+                      // resizeMode="contain"
                       source={require('../../Assets4/wrongselection.png')}
                     />
                   ) : null}

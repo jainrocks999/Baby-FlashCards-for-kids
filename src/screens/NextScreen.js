@@ -102,6 +102,7 @@ const NextScreen = ({route}) => {
             <Image
               style={{height: '100%', width: '100%'}}
               source={require('../../Assets4/btnrepeat_normal.png')}
+              resizeMode="contain"
             />
             <Text
               style={{
@@ -122,6 +123,7 @@ const NextScreen = ({route}) => {
             <Image
               style={{height: '100%', width: '100%'}}
               source={require('../../Assets4/btnnextcatg_normal.png')}
+              resizeMode="contain"
             />
             <Text
               style={{
@@ -143,6 +145,7 @@ const NextScreen = ({route}) => {
             <Image
               style={{height: '100%', width: '100%'}}
               source={require('../../Assets4/btnhome_normal.png')}
+              resizeMode="contain"
             />
             <Text
               style={{

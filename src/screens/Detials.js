@@ -199,8 +199,10 @@ const Detials = props => {
   return (
     <GestureRecognizer
       style={{flex: 1}}
-      onSwipeLeft={() => setting.Swipe && setCount(count + 1)}
-      onSwipeRight={() => setting.Swipe && setCount(count - 1)}>
+      onSwipeLeft={() =>
+        setting.Swipe && count != data.length && setCount(count + 1)
+      }
+      onSwipeRight={() => setting.Swipe && count > 0 && setCount(count - 1)}>
       <View style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.header}>
           <TouchableOpacity
@@ -212,6 +214,7 @@ const Detials = props => {
             <Image
               style={styles.icon}
               source={require('../../Assets4/btnhome_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
           <Text style={styles.Titel}>{setting.English && Title}</Text>
@@ -230,6 +233,7 @@ const Detials = props => {
             <Image
               style={styles.icon}
               source={require('../../Assets4/btnsetting_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
         </View>
@@ -241,6 +245,7 @@ const Detials = props => {
                 width: '100%',
                 alignItems: 'center',
               }}
+              resizeMode="contain"
               source={{uri: Images}}
             />
           )}
@@ -250,7 +255,8 @@ const Detials = props => {
             <TouchableOpacity
               onPress={async () => {
                 setCount(count - 1);
-              }}>
+              }}
+              disabled={count <= 0 ? true : false}>
               <Image
                 style={[
                   styles.btn,
@@ -259,6 +265,7 @@ const Detials = props => {
                     width: tablet ? wp(31) : wp(35),
                   },
                 ]}
+                resizeMode="contain"
                 source={require('../../Assets4/btnprevious_normal.png')}
               />
             </TouchableOpacity>
@@ -270,13 +277,15 @@ const Detials = props => {
             <Image
               style={[styles.btn2, setting.Swipe && {marginLeft: '60%'}]}
               source={require('../../Assets4/btnrepeat_normal.png')}
+              resizeMode="contain"
             />
           </TouchableOpacity>
           {!setting.Swipe && (
             <TouchableOpacity
               onPress={async () => {
                 setCount(count + 1);
-              }}>
+              }}
+              disabled={count === data.length ? true : false}>
               <Image
                 style={[
                   styles.btn,
@@ -286,6 +295,7 @@ const Detials = props => {
                   },
                 ]}
                 source={require('../../Assets4/btnnext_normal.png')}
+                resizeMode="contain"
               />
             </TouchableOpacity>
           )}

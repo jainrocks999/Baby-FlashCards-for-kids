@@ -19,6 +19,7 @@ const Switch = ({style, text, sw, onPress, ...props}) => {
               ? require('../../Assets4/on.png')
               : require('../../Assets4/off.png')
           }
+          resizeMode="contain"
         />
       </TouchableOpacity>
     </View>
