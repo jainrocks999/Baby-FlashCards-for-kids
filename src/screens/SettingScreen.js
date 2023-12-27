@@ -138,9 +138,9 @@ const SettingScreen = props => {
   };
   const getPrevSetting = async mode => {
     let res = await AsyncStorage.getItem('setting');
-    const newval = await JSON.parse(res);
+    const newVal = await JSON.parse(res);
     if (mode == false) {
-      setToggleSwich(newval);
+      setToggleSwich(newVal);
     } else {
       await AsyncStorage.setItem('setting', JSON.stringify(togleSwitch));
       setToggleSwich(pre => false);

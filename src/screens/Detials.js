@@ -101,18 +101,21 @@ const Detials = props => {
     const shuffledData = shuffle([...data]);
     newData = [...shuffledData];
   } else {
-    newData = [...data]?.sort((a, b) => {
-      const titleA = a.Title.toUpperCase();
-      const titleB = b.Title.toUpperCase();
+    newData =
+      data[0].Category != 'Numbers'
+        ? [...data]?.sort((a, b) => {
+            const titleA = a.Title.toUpperCase();
+            const titleB = b.Title.toUpperCase();
 
-      if (titleA < titleB) {
-        return -1;
-      }
-      if (titleA > titleB) {
-        return 1;
-      }
-      return 0;
-    });
+            if (titleA < titleB) {
+              return -1;
+            }
+            if (titleA > titleB) {
+              return 1;
+            }
+            return 0;
+          })
+        : data.sort();
   }
 
   const getData = async () => {
