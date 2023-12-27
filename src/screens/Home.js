@@ -34,11 +34,7 @@ const Home = () => {
         [],
         (tx, results) => {
           let row = results.rows.item(0);
-
-          console.log(row);
-
           dispatch(addSetting(row));
-
           dispatch(QuestionMode(row.Question));
         },
         err => {

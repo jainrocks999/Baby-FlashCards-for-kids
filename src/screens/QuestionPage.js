@@ -240,9 +240,10 @@ const QuestionPage = props => {
         </View>
         <View
           style={{
-            marginTop: tablet ? '5%' : '15%',
+            marginTop: tablet ? '5%' : '0%',
             alignSelf: 'center',
             alignItems: 'center',
+            paddingLeft: '2%',
           }}>
           <FlatList
             data={rendomdat}
@@ -265,7 +266,7 @@ const QuestionPage = props => {
                   <Image
                     style={{height: '100%', width: '100%'}}
                     source={{uri: `asset:/files/${item.Image}`}}
-                    resizeMode="contain"
+                    resizeMode="stretch"
                   />
                   {wrong.includes(index) ? (
                     <Image
@@ -349,11 +350,10 @@ const styles = StyleSheet.create({
     bottom: '1%',
   },
   mobileView: {
-    height: hp(30),
-    width: hp(22),
-    marginHorizontal: wp(1.5),
-    marginVertical: hp(3),
-    alignItems: 'center',
+    height: hp(38),
+    width: '46%',
+    marginHorizontal: '1.5%',
+    marginVertical: '1.5%',
   },
   tabView: {
     height: hp(38),

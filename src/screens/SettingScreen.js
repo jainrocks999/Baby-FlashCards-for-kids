@@ -38,6 +38,7 @@ import {
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const SettingScreen = props => {
   const pr = props.route.params.pr;
 
@@ -48,7 +49,6 @@ const SettingScreen = props => {
   const quesion = useSelector(state => state.question);
   const setting = useSelector(state => state.setting);
   const backSound = useSelector(state => state.backsound);
-  console.log('thisi sfrom setting', backSound);
   const Navigation = useNavigation();
   const dispatch = useDispatch();
   const [togleSwitch, setToggleSwich] = useState({
@@ -136,6 +136,16 @@ const SettingScreen = props => {
       );
     });
   };
+  const getPrevSetting = async mode => {
+    let res = await AsyncStorage.getItem('setting');
+    const newval = await JSON.parse(res);
+    if (mode == false) {
+      setToggleSwich(newval);
+    } else {
+      await AsyncStorage.setItem('setting', JSON.stringify(togleSwitch));
+      setToggleSwich(pre => false);
+    }
+  };
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
@@ -177,8 +187,9 @@ const SettingScreen = props => {
               <Switch
                 text="Ouestion mode"
                 style={styles.sw}
-                onPress={() => {
-                  setquestion(!questionMode), setToggleSwich(pre => false);
+                onPress={async () => {
+                  setquestion(!questionMode);
+                  getPrevSetting(!questionMode);
                 }}
                 onFocus={() => {
                   console.log('rrrj');

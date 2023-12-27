@@ -217,7 +217,7 @@ const Detials = props => {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text style={styles.Titel}>{setting.English && Title}</Text>
+          <Text style={styles.Titel}>{setting.English ? Title : ''}</Text>
           <TouchableOpacity
             onPress={async () => {
               await TrackPlayer.reset();
