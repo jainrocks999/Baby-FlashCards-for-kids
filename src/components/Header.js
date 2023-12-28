@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Sound} from '../reduxToolkit/Slice4';
 import {
   heightPercentageToDP as hp,
+  widthPercentageToDP,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
@@ -70,10 +71,12 @@ const Header = ({onPress, onPress2, mute, home}) => {
         height: height / 12,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginHorizontal: widthPercentageToDP(2),
+        marginTop: wp(1),
       }}>
       <TouchableOpacity onPress={onPress2}>
         <Image
-          style={{height: hp(7), width: hp(7), margin: '1%'}}
+          style={{height: hp(7), width: hp(7)}}
           source={
             mt
               ? require('../../Assets4/btnsseakar.png')

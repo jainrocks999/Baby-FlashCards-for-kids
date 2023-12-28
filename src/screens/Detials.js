@@ -38,7 +38,7 @@ const Detials = props => {
   const tablet = isTablet();
   const disapatch = useDispatch();
   const backSound = useSelector(state => state.backsound);
-  console.log('this is backdound', backSound);
+
   const interstitial = InterstitialAd.createForAdRequest(adUnit, requestOption);
   useEffect(() => {
     const backAction = async () => {
@@ -126,33 +126,26 @@ const Detials = props => {
     let track;
     let track2;
     let ActualSound;
-    const numbers = [6, 9, 5, 8, 12];
-    const indexx = Math.floor(Math.random() * numbers.length);
     let y = data.length;
     if (count >= 0 && count <= y - 1) {
-      newData.map(async (item, index) => {
-        if (index == count) {
-          Imagess = `asset:/files/${item.Image}`;
-          Titel = item.Title;
-          track = {
-            url: `asset:/files/${item.Sound}`, // Load media from the file system
-            title: Titel,
-            artist: 'eFlashApps',
-            // Load artwork from the file system:
-            artwork: `asset:/files/${item.Sound}`,
-            duration: null,
-          };
-          track2 = {
-            url: `asset:/files/${item.ActualSound}`, // Load media from the file system
-            title: Titel,
-            artist: 'eFlashApps',
-            // Load artwork from the file system:
-            artwork: `asset:/files/${item.Sound}`,
-            duration: null,
-          };
-          ActualSound = item.ActualSound;
-        }
-      });
+      Imagess = `asset:/files/${newData[count].Image}`;
+      Titel = newData[count].Title;
+      track = {
+        url: `asset:/files/${newData[count].Sound}`, // Load media from the file system
+        title: Titel,
+        artist: 'eFlashApps',
+        // Load artwork from the file system:
+        artwork: `asset:/files/${newData[count].Sound}`,
+        duration: null,
+      };
+      track2 = {
+        url: `asset:/files/${newData[count].ActualSound}`, // Load media from the file system
+        title: Titel,
+        artist: 'eFlashApps',
+        // Load artwork from the file system:
+        artwork: `asset:/files/${newData[count].Sound}`,
+        duration: null,
+      };
     } else if (count < 0) {
       navigation.goBack();
     } else {

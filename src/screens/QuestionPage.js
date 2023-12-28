@@ -60,6 +60,7 @@ const QuestionPage = props => {
   const [x, setX] = useState(0);
   const [count, setCount] = useState(1);
   const [wrong, setWrong] = useState([]);
+  const [right, setRight] = useState(false);
   const data = useSelector(state => state.Items);
   const showAdd = () => {
     const unsubscribe = interstitial.addAdEventListener(
@@ -110,26 +111,19 @@ const QuestionPage = props => {
   const [rendomdat, setrandomDat] = useState(data.slice(0, 4));
   const up = async indexx => {
     await TrackPlayer.reset();
-    console.log(x);
 
     let traxck;
     let track2;
-    WrongVoid.sort(() => Math.random() - 0.5).map((item, index) => {
-      if (index === 1) {
-        traxck = item;
-      }
-    });
-    RightVOid.sort(() => Math.random() - 0.5).map((item, index) => {
-      if (index === 1) {
-        track2 = item;
-      }
-    });
+    traxck = WrongVoid.sort(() => Math.random() - 0.5)[1];
+    track2 = RightVOid.sort(() => Math.random() - 0.5)[1];
 
     if (indexx === x) {
+      setRight(true);
       const arr = [0, 1, 2, 3].filter(item => item != x);
       setWrong(arr);
       await TrackPlayer.add(track2);
       setTimeout(() => {
+        setRight(false);
         setWrong([]);
         const shuffledData = data
           .slice()
@@ -240,7 +234,7 @@ const QuestionPage = props => {
         </View>
         <View
           style={{
-            marginTop: tablet ? '5%' : '0%',
+            marginTop: tablet ? '5%' : '5%',
             alignSelf: 'center',
             alignItems: 'center',
             paddingLeft: '2%',
@@ -262,11 +256,12 @@ const QuestionPage = props => {
                       });
                     }
                   }}
-                  style={[!tablet ? styles.mobileView : styles.tabView]}>
+                  style={[!tablet ? styles.mobileView : styles.tabView]}
+                  disabled={right || wrong.includes(index) ? true : false}>
                   <Image
                     style={{height: '100%', width: '100%'}}
                     source={{uri: `asset:/files/${item.Image}`}}
-                    resizeMode="stretch"
+                    resizeMode="contain"
                   />
                   {wrong.includes(index) ? (
                     <Image
@@ -285,7 +280,7 @@ const QuestionPage = props => {
           />
         </View>
       </View>
-      <View style={{bottom: 0, borderWidth: 0}}>
+      <View style={{bottom: 0, borderWidth: 0, backgroundColor: 'white'}}>
         <GAMBannerAd
           unitId={Addsid.BANNER}
           sizes={[BannerAdSize.FULL_BANNER]}

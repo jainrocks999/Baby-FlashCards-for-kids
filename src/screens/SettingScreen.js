@@ -262,14 +262,14 @@ const SettingScreen = props => {
               }
             }}>
             <Image
-              style={{height: hp(6), width: wp(30)}}
+              style={{height: hp(7), width: wp(35)}}
               source={require('../../Assets4/btncancel_normal.png')}
               resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => Save()}>
             <Image
-              style={{height: hp(6), width: wp(30)}}
+              style={{height: hp(7), width: wp(35)}}
               source={require('../../Assets4/btnsave_normal.png')}
               resizeMode="contain"
             />

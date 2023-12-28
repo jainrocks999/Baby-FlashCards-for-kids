@@ -17,7 +17,7 @@ const Card = ({item, onPress}) => {
         styles.container,
         item?.Category == 'link' || item?.Category == 'link2'
           ? {height: tablet ? hp(28) : hp(22), width: wp(45)}
-          : {height: tablet ? hp(25) : 140},
+          : {height: tablet ? hp(25) : hp(20)},
       ]}
       activeOpacity={0.8}>
       <Image
@@ -33,12 +33,10 @@ export default Card;
 
 const styles = StyleSheet.create({
   container: {
-    // borderWidth: 1,
-    width: '45%',
-    // mrh: '2%',
-    marginHorizontal: '2%',
-    marginVertical: '1%',
-
+    height: hp(20),
+    width: wp(45),
+    margin: '2%',
     borderRadius: 20,
+    overflow: 'hidden',
   },
 });
