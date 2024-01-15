@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {height, width} from '../components/Diemenstions';
-import TrackPlayer, {TrackType} from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import {setupPlayer} from '../components/Setup';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import {StackActions, useNavigation} from '@react-navigation/native';
@@ -115,7 +115,7 @@ const Detials = props => {
             }
             return 0;
           })
-        : data.sort();
+        : [...data].sort();
   }
 
   const getData = async () => {
@@ -128,6 +128,7 @@ const Detials = props => {
     let ActualSound;
     let y = data.length;
     if (count >= 0 && count <= y - 1) {
+      ActualSound = newData[count].ActualSound;
       Imagess = `asset:/files/${newData[count].Image}`;
       Titel = newData[count].Title;
       track = {

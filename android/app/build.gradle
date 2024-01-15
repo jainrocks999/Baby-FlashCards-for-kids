@@ -98,8 +98,8 @@ android {
         applicationId "com.eFlashEnglish"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 50
-        versionName "5.6"
+        versionCode 52
+        versionName "5.8"
     }
 
     splits {
