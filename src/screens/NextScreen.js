@@ -29,6 +29,7 @@ import {
   GAMBannerAd,
   BannerAdSize,
   TestIds,
+  BannerAd,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
 const NextScreen = ({route}) => {
@@ -81,7 +82,7 @@ const NextScreen = ({route}) => {
 
   const [mute, setMut] = useState(muted);
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
       <ImageBackground
         style={{flex: 1}}
         source={require('../../Assets4/settingscreen.png')}>
@@ -180,9 +181,9 @@ const NextScreen = ({route}) => {
           </View>
         </View>
         <View style={{position: 'absolute', bottom: 0}}>
-          <GAMBannerAd
+          <BannerAd
             unitId={Addsid.BANNER}
-            sizes={[BannerAdSize.FULL_BANNER]}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
             requestOptions={{
               requestNonPersonalizedAdsOnly: true,
             }}

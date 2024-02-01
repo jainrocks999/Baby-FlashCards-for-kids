@@ -6,6 +6,8 @@ import {
   View,
   BackHandler,
   Alert,
+  Platform,
+  SafeAreaView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -21,18 +23,18 @@ import {
 } from 'react-native-responsive-screen';
 import {isTablet} from 'react-native-device-info';
 import {
-  TestIds,
   InterstitialAd,
   AdEventType,
   GAMBannerAd,
   BannerAdSize,
+  BannerAd,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
+import RNFS from 'react-native-fs';
 
 const adUnit = Addsid.Interstitial;
 const requestOption = {
   requestNonPersonalizedAdsOnly: true,
-  // keywords: ['fashion', 'clothing'],
 };
 const Detials = props => {
   const tablet = isTablet();
@@ -68,6 +70,10 @@ const Detials = props => {
   const setting = useSelector(state => state.setting);
 
   const data = useSelector(state => state.Items);
+  const path = Platform.select({
+    android: 'asset:/files/',
+    ios: RNFS.MainBundlePath + '/files/',
+  });
 
   const getAdd = () => {
     const unsubscribe = interstitial.addAdEventListener(
@@ -129,22 +135,22 @@ const Detials = props => {
     let y = data.length;
     if (count >= 0 && count <= y - 1) {
       ActualSound = newData[count].ActualSound;
-      Imagess = `asset:/files/${newData[count].Image}`;
+      Imagess = `${path}${newData[count].Image}`;
       Titel = newData[count].Title;
       track = {
-        url: `asset:/files/${newData[count].Sound}`, // Load media from the file system
+        url: `${path}${newData[count].Sound}`, // Load media from the file system
         title: Titel,
         artist: 'eFlashApps',
         // Load artwork from the file system:
-        artwork: `asset:/files/${newData[count].Sound}`,
+        artwork: `${path}${newData[count].Sound}`,
         duration: null,
       };
       track2 = {
-        url: `asset:/files/${newData[count].ActualSound}`, // Load media from the file system
+        url: `${path}${newData[count].ActualSound}`, // Load media from the file system
         title: Titel,
         artist: 'eFlashApps',
         // Load artwork from the file system:
-        artwork: `asset:/files/${newData[count].Sound}`,
+        artwork: `${path}${newData[count].Sound}`,
         duration: null,
       };
     } else if (count < 0) {
@@ -194,118 +200,122 @@ const Detials = props => {
   };
 
   return (
-    <GestureRecognizer
-      style={{flex: 1}}
-      onSwipeLeft={() =>
-        setting.Swipe && count != data.length && setCount(count + 1)
-      }
-      onSwipeRight={() => setting.Swipe && count > 0 && setCount(count - 1)}>
-      <View style={{flex: 1, backgroundColor: 'white'}}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={async () => {
-              await TrackPlayer.reset();
+    <SafeAreaView style={{flex: 1, backgroundColor: 'grey'}}>
+      <GestureRecognizer
+        style={{flex: 1}}
+        onSwipeLeft={() =>
+          setting.Swipe && count != data.length && setCount(count + 1)
+        }
+        onSwipeRight={() => setting.Swipe && count > 0 && setCount(count - 1)}>
+        <View style={{flex: 1, backgroundColor: 'white'}}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={async () => {
+                await TrackPlayer.reset();
 
-              navigation.reset({index: 0, routes: [{name: 'home'}]});
-            }}>
-            <Image
-              style={styles.icon}
-              source={require('../../Assets4/btnhome_normal.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          <Text style={styles.Titel}>{setting.English ? Title : ''}</Text>
-          <TouchableOpacity
-            onPress={async () => {
-              await TrackPlayer.reset();
-              disapatch({
-                type: 'backSoundFromquestions/playWhenThePage',
-                fromDetails: false,
-                fromQuestion: false,
-              });
-              navigation.dispatch(
-                StackActions.push('setting', {pr: 'details'}),
-              );
-            }}>
-            <Image
-              style={styles.icon}
-              source={require('../../Assets4/btnsetting_normal.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.imgContainer}>
-          {Images && (
-            <Image
-              style={{
-                height: height / 1.45,
-                width: '100%',
-                alignItems: 'center',
-              }}
-              resizeMode="contain"
-              source={{uri: Images}}
-            />
-          )}
-        </View>
-        <View style={styles.btnContainer}>
-          {!setting.Swipe && (
-            <TouchableOpacity
-              onPress={async () => {
-                setCount(count - 1);
-              }}
-              disabled={count <= 0 ? true : false}>
+                navigation.reset({index: 0, routes: [{name: 'home'}]});
+              }}>
               <Image
-                style={[
-                  styles.btn,
-                  {
-                    height: tablet ? hp(6) : hp(5.6),
-                    width: tablet ? wp(31) : wp(35),
-                  },
-                ]}
-                resizeMode="contain"
-                source={require('../../Assets4/btnprevious_normal.png')}
-              />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity
-            onPress={() => {
-              paly();
-            }}>
-            <Image
-              style={[styles.btn2, setting.Swipe && {marginLeft: '60%'}]}
-              source={require('../../Assets4/btnrepeat_normal.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          {!setting.Swipe && (
-            <TouchableOpacity
-              onPress={async () => {
-                setCount(count + 1);
-              }}
-              disabled={count === data.length ? true : false}>
-              <Image
-                style={[
-                  styles.btn,
-                  {
-                    height: tablet ? hp(6) : hp(5.6),
-                    width: tablet ? wp(31) : wp(35),
-                  },
-                ]}
-                source={require('../../Assets4/btnnext_normal.png')}
+                style={styles.icon}
+                source={require('../../Assets4/btnhome_normal.png')}
                 resizeMode="contain"
               />
             </TouchableOpacity>
-          )}
+            <Text style={styles.Titel}>{setting.English ? Title : ''}</Text>
+            <TouchableOpacity
+              onPress={async () => {
+                await TrackPlayer.reset();
+                disapatch({
+                  type: 'backSoundFromquestions/playWhenThePage',
+                  fromDetails: false,
+                  fromQuestion: false,
+                });
+                navigation.dispatch(
+                  StackActions.push('setting', {pr: 'details'}),
+                );
+              }}>
+              <Image
+                style={styles.icon}
+                source={require('../../Assets4/btnsetting_normal.png')}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.imgContainer}>
+            {Images && (
+              <Image
+                style={{
+                  height: height / 1.45,
+                  width: '100%',
+                  alignItems: 'center',
+                }}
+                resizeMode="contain"
+                source={{uri: Images}}
+              />
+            )}
+          </View>
+          <View style={styles.btnContainer}>
+            {!setting.Swipe && (
+              <TouchableOpacity
+                onPress={async () => {
+                  setCount(count - 1);
+                }}
+                disabled={count <= 0 ? true : false}>
+                <Image
+                  style={[
+                    styles.btn,
+                    {
+                      height: tablet ? hp(6) : hp(5.6),
+                      width: tablet ? wp(31) : wp(35),
+                    },
+                  ]}
+                  resizeMode="contain"
+                  source={require('../../Assets4/btnprevious_normal.png')}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => {
+                paly();
+              }}>
+              <Image
+                style={[styles.btn2, setting.Swipe && {marginLeft: '60%'}]}
+                source={require('../../Assets4/btnrepeat_normal.png')}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            {!setting.Swipe && (
+              <TouchableOpacity
+                onPress={async () => {
+                  setCount(count + 1);
+                }}
+                disabled={count === data.length ? true : false}>
+                <Image
+                  style={[
+                    styles.btn,
+                    {
+                      height: tablet ? hp(6) : hp(5.6),
+                      width: tablet ? wp(31) : wp(35),
+                    },
+                  ]}
+                  source={require('../../Assets4/btnnext_normal.png')}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-      <GAMBannerAd
-        unitId={Addsid.BANNER}
-        sizes={[BannerAdSize.FULL_BANNER]}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-      />
-    </GestureRecognizer>
+        {/* <View style={{position: 'relative', bottom: 0}}> */}
+        <BannerAd
+          unitId={Addsid.BANNER}
+          sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+        {/* </View> */}
+      </GestureRecognizer>
+    </SafeAreaView>
   );
 };
 

@@ -3,32 +3,24 @@ export const WrongVoid = [
     url: require('../../asset2/uhoh.mp3'), // Load media from the file system
     title: 'uhoh',
     artist: 'eFlashApps',
-    // Load artwork from the file system: //tryagain.mp3'
-    //artwork: `asset:/files/${item.Sound}`,//uhoh.mp3
     duration: null,
   }),
   (track = {
     url: require('../../asset2/tryagain.mp3'), // Load media from the file system
     title: 'tryagain',
     artist: 'eFlashApps',
-    // Load artwork from the file system: oopsie.mp3
-    //artwork: `asset:/files/${item.Sound}`,
     duration: null,
   }),
   (track3 = {
     url: require('../../asset2/oopsie.mp3'), // Load media from the file system
     title: 'oopsie',
     artist: 'eFlashApps',
-    // Load artwork from the file system:
-    //artwork: `asset:/files/${item.Sound}`,
     duration: null,
   }),
   (track4 = {
     url: require('../../asset2/youcandoit.mp3'), // Load media from the file system
     title: 'youcandoit',
     artist: 'eFlashApps',
-    // Load artwork from the file system:
-    //artwork: `asset:/files/${item.Sound}`,
     duration: null,
   }),
 ];
@@ -37,16 +29,12 @@ export const RightVOid = [
     url: require('../../asset2/excellent.mp3'), // Load media from the file system
     title: 'excellent',
     artist: 'eFlashApps',
-    // Load artwork from the file system:
-    //artwork: `asset:/files/${item.Sound}`,
     duration: null,
   }),
   (track = {
     url: require('../../asset2/fantastic.mp3'), // Load media from the file system
     title: 'fantastic',
     artist: 'eFlashApps',
-    // Load artwork from the file system:
-    //artwork: `asset:/files/${item.Sound}`,
     duration: null,
   }),
   (track3 = {

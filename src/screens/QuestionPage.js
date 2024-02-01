@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   BackHandler,
   Alert,
+  Platform,
+  SafeAreaView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -28,14 +30,20 @@ import {
   AdEventType,
   GAMBannerAd,
   BannerAdSize,
+  BannerAd,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
+import RNFS from 'react-native-fs';
 const authId = Addsid.Interstitial;
 const requestOption = {
   requestNonPersonalizedAdsOnly: true,
   keywords: ['fashion', 'clothing'],
 };
 const QuestionPage = props => {
+  const path = Platform.select({
+    android: 'asset:/files/',
+    ios: RNFS.MainBundlePath + '/files/',
+  });
   const interstitial = InterstitialAd.createForAdRequest(authId, requestOption);
   const tablet = isTablet();
   const disapatch = useDispatch();
@@ -84,14 +92,14 @@ const QuestionPage = props => {
     }
     let arr = [
       (track = {
-        url: require('../../asset2/clickon.mp3'), // Load media from the file system
+        url: require('../../asset2/clickon.mp3'),
         title: item.Title,
         artist: 'eFlashApps',
 
         duration: null,
       }),
       (track2 = {
-        url: `asset:/files/${item.Sound}`, // Load media from the file system
+        url: `${path}${item.Sound}`,
         title: item.Title,
         artist: 'eFlashApps',
         // Load artwork from the file system:
@@ -199,97 +207,99 @@ const QuestionPage = props => {
     navigation.dispatch(StackActions.push('setting', {pr: 'question'}));
   };
   return (
-    <View style={{height: '100%', width: '100%'}}>
-      <View style={{flex: 1, backgroundColor: 'white'}}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={async () => {
-              await TrackPlayer.reset();
+    <SafeAreaView style={{flex: 1, backgroundColor: 'grey'}}>
+      <View style={{height: '100%', width: '100%'}}>
+        <View style={{flex: 1, backgroundColor: 'white'}}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={async () => {
+                await TrackPlayer.reset();
 
-              navigation.reset({index: 0, routes: [{name: 'home'}]});
+                navigation.reset({index: 0, routes: [{name: 'home'}]});
+              }}>
+              <Image
+                style={styles.icon}
+                resizeMode="contain"
+                source={require('../../Assets4/btnhome_normal.png')}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => sound()}>
+              <Image
+                style={styles.btn2}
+                source={require('../../Assets4/btnrepeat_normal.png')}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={async () => {
+                gotoSettings();
+              }}>
+              <Image
+                style={styles.icon}
+                source={require('../../Assets4/btnsetting_normal.png')}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              marginTop: tablet ? '-1%' : '-1%',
+              alignSelf: 'center',
+              alignItems: 'center',
+              paddingLeft: '2%',
             }}>
-            <Image
-              style={styles.icon}
-              resizeMode="contain"
-              source={require('../../Assets4/btnhome_normal.png')}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => sound()}>
-            <Image
-              style={styles.btn2}
-              source={require('../../Assets4/btnrepeat_normal.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={async () => {
-              gotoSettings();
-            }}>
-            <Image
-              style={styles.icon}
-              source={require('../../Assets4/btnsetting_normal.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            marginTop: tablet ? '5%' : '5%',
-            alignSelf: 'center',
-            alignItems: 'center',
-            paddingLeft: '2%',
-          }}>
-          <FlatList
-            data={rendomdat}
-            numColumns={2}
-            keyExtractor={item => item.ID}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => {
-                    up(index);
-                    if (backSound.fromQuestion) {
-                      disapatch({
-                        type: 'backSoundFromquestions/playWhenThePage',
-                        fromDetails: false,
-                        fromQuestion: false,
-                      });
-                    }
-                  }}
-                  style={[!tablet ? styles.mobileView : styles.tabView]}
-                  disabled={right || wrong.includes(index) ? true : false}>
-                  <Image
-                    style={{height: '100%', width: '100%'}}
-                    source={{uri: `asset:/files/${item.Image}`}}
-                    resizeMode="contain"
-                  />
-                  {wrong.includes(index) ? (
+            <FlatList
+              data={rendomdat}
+              numColumns={2}
+              keyExtractor={item => item.ID}
+              renderItem={({item, index}) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      up(index);
+                      if (backSound.fromQuestion) {
+                        disapatch({
+                          type: 'backSoundFromquestions/playWhenThePage',
+                          fromDetails: false,
+                          fromQuestion: false,
+                        });
+                      }
+                    }}
+                    style={[!tablet ? styles.mobileView : styles.tabView]}
+                    disabled={right || wrong.includes(index) ? true : false}>
                     <Image
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                        position: 'absolute',
-                      }}
-                      // resizeMode="contain"
-                      source={require('../../Assets4/wrongselection.png')}
+                      style={{height: '100%', width: '100%'}}
+                      source={{uri: `${path}${item.Image}`}}
+                      resizeMode="contain"
                     />
-                  ) : null}
-                </TouchableOpacity>
-              );
+                    {wrong.includes(index) ? (
+                      <Image
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          position: 'absolute',
+                        }}
+                        // resizeMode="contain"
+                        source={require('../../Assets4/wrongselection.png')}
+                      />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </View>
+        <View style={{bottom: 0, borderWidth: 0, backgroundColor: 'white'}}>
+          <BannerAd
+            unitId={Addsid.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
             }}
           />
         </View>
       </View>
-      <View style={{bottom: 0, borderWidth: 0, backgroundColor: 'white'}}>
-        <GAMBannerAd
-          unitId={Addsid.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

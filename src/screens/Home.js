@@ -1,4 +1,10 @@
-import {StyleSheet, ImageBackground, Vibration, View} from 'react-native';
+import {
+  StyleSheet,
+  ImageBackground,
+  Vibration,
+  View,
+  SafeAreaView,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import HorizontalList from '../components/HorizontalList';
@@ -11,6 +17,7 @@ import {QuestionMode} from '../reduxToolkit/Slice3';
 import {
   GAMBannerAd,
   BannerAdSize,
+  BannerAd,
   TestIds,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
@@ -45,28 +52,30 @@ const Home = () => {
   };
 
   return (
-    <ImageBackground
-      style={{flex: 1}}
-      source={require('../../Assets4/bgnewcategory.png')}>
-      <Header
-        onPress2={() => setMute(!mute)}
-        mute={mute}
-        onPress={() => {
-          Navigation.navigate('setting', {pr: 'home'});
-        }}
-        home
-      />
-      <HorizontalList items={MyData} />
-      <View style={{position: 'relative', bottom: 0}}>
-        <GAMBannerAd
-          unitId={Addsid.BANNER}
-          sizes={[BannerAdSize.FULL_BANNER]}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
+    <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
+      <ImageBackground
+        style={{flex: 1}}
+        source={require('../../Assets4/bgnewcategory.png')}>
+        <Header
+          onPress2={() => setMute(!mute)}
+          mute={mute}
+          onPress={() => {
+            Navigation.navigate('setting', {pr: 'home'});
           }}
+          home
         />
-      </View>
-    </ImageBackground>
+        <HorizontalList items={MyData} />
+        <View style={{position: 'relative', bottom: 0}}>
+          <BannerAd
+            unitId={Addsid.BANNER}
+            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </View>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
