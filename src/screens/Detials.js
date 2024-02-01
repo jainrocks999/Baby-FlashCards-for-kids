@@ -125,6 +125,7 @@ const Detials = props => {
   }
 
   const getData = async () => {
+    console.log(newData[count]);
     let isSetup = await setupPlayer();
     await TrackPlayer.reset();
     let Imagess;
@@ -245,7 +246,7 @@ const Detials = props => {
             {Images && (
               <Image
                 style={{
-                  height: height / 1.45,
+                  height: height / 1.6,
                   width: '100%',
                   alignItems: 'center',
                 }}
@@ -254,8 +255,12 @@ const Detials = props => {
               />
             )}
           </View>
-          <View style={styles.btnContainer}>
-            {!setting.Swipe && (
+          <View
+            style={[
+              styles.btnContainer,
+              !setting.Swipe ? {flexDirection: 'row'} : null,
+            ]}>
+            {!setting.Swipe ? (
               <TouchableOpacity
                 onPress={async () => {
                   setCount(count - 1);
@@ -273,18 +278,18 @@ const Detials = props => {
                   source={require('../../Assets4/btnprevious_normal.png')}
                 />
               </TouchableOpacity>
-            )}
+            ) : null}
             <TouchableOpacity
               onPress={() => {
                 paly();
               }}>
               <Image
-                style={[styles.btn2, setting.Swipe && {marginLeft: '60%'}]}
+                style={[styles.btn2, setting.Swipe && {alignSelf: 'center'}]}
                 source={require('../../Assets4/btnrepeat_normal.png')}
                 resizeMode="contain"
               />
             </TouchableOpacity>
-            {!setting.Swipe && (
+            {!setting.Swipe ? (
               <TouchableOpacity
                 onPress={async () => {
                   setCount(count + 1);
@@ -302,10 +307,10 @@ const Detials = props => {
                   resizeMode="contain"
                 />
               </TouchableOpacity>
-            )}
+            ) : null}
           </View>
         </View>
-        {/* <View style={{position: 'relative', bottom: 0}}> */}
+
         <BannerAd
           unitId={Addsid.BANNER}
           sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
@@ -313,7 +318,6 @@ const Detials = props => {
             requestNonPersonalizedAdsOnly: true,
           }}
         />
-        {/* </View> */}
       </GestureRecognizer>
     </SafeAreaView>
   );
@@ -342,14 +346,14 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     height: height,
-    marginTop: '5%',
+    marginTop: '1%',
     // marginLeft: 8,
   },
   btnContainer: {
     position: 'absolute',
-    bottom: '9%',
+    bottom: '3%',
     width: '98%',
-    flexDirection: 'row',
+
     justifyContent: 'space-between',
     marginHorizontal: wp(1.5),
     alignSelf: 'center',
