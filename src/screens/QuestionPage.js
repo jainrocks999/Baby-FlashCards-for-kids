@@ -274,6 +274,7 @@ const QuestionPage = props => {
                     />
                     {wrong.includes(index) ? (
                       <Image
+                        //resizeMode="stretch"
                         style={{
                           height: '100%',
                           width: '100%',
