@@ -1,11 +1,5 @@
-import {
-  StyleSheet,
-  ImageBackground,
-  Vibration,
-  View,
-  SafeAreaView,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {StyleSheet, ImageBackground, View, SafeAreaView} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import HorizontalList from '../components/HorizontalList';
 import Header from '../components/Header';
@@ -14,13 +8,10 @@ import {useNavigation} from '@react-navigation/native';
 var SQLite = require('react-native-sqlite-storage');
 import {addSetting} from '../reduxToolkit/Slice2';
 import {QuestionMode} from '../reduxToolkit/Slice3';
-import {
-  GAMBannerAd,
-  BannerAdSize,
-  BannerAd,
-  TestIds,
-} from 'react-native-google-mobile-ads';
+import {BannerAdSize, BannerAd} from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
+import {IAPContext} from '../Context';
+import PurcahsdeModal from '../components/requestPurchase';
 const db = SQLite.openDatabase({
   name: 'eFlashEngishinappnew.db',
   createFromLocation: 1,
@@ -28,6 +19,8 @@ const db = SQLite.openDatabase({
 
 const Home = () => {
   const muted = useSelector(state => state.sound);
+  const {hasPurchased, requestPurchase, checkPurchases, visible, setVisible} =
+    useContext(IAPContext);
   const Navigation = useNavigation();
   const [mute, setMute] = useState(muted);
   useEffect(() => {
@@ -50,6 +43,9 @@ const Home = () => {
       );
     });
   };
+  const onClose = value => {
+    setVisible(value);
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
@@ -58,27 +54,42 @@ const Home = () => {
         source={require('../../Assets4/bgnewcategory.png')}>
         <Header
           onPress2={() => setMute(!mute)}
+          onPressPuchase={() => setVisible(true)}
+          hasPurchased={hasPurchased}
           mute={mute}
           onPress={() => {
             Navigation.navigate('setting', {pr: 'home'});
           }}
           home
         />
-        <HorizontalList items={MyData} />
-        <View style={{position: 'relative', bottom: 0}}>
-          <BannerAd
-            unitId={Addsid.BANNER}
-            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: true,
+        {!hasPurchased ? (
+          <PurcahsdeModal
+            onPress={async () => {
+              requestPurchase();
+              setVisible(false);
+            }}
+            onClose={onClose}
+            visible={visible}
+            onRestore={() => {
+              checkPurchases(true);
             }}
           />
-        </View>
+        ) : null}
+        <HorizontalList items={MyData} />
+        {!hasPurchased ? (
+          <View style={{position: 'relative', bottom: 0}}>
+            <BannerAd
+              unitId={Addsid.BANNER}
+              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
+          </View>
+        ) : null}
       </ImageBackground>
     </SafeAreaView>
   );
 };
 
 export default Home;
-
-const styles = StyleSheet.create({});

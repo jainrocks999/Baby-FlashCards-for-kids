@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import {useSelector, useDispatch} from 'react-redux';
@@ -32,7 +32,10 @@ import {
   BannerAd,
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
+import {IAPContext} from '../Context';
 const NextScreen = ({route}) => {
+  const {hasPurchased} = useContext(IAPContext);
+
   const navigation = useNavigation();
   const item = useSelector(state => state?.catdata);
   console.log('this is item', item);
@@ -102,7 +105,7 @@ const NextScreen = ({route}) => {
               width: '33%',
             }}>
             <TouchableOpacity
-              style={{height: hp('9%'), width: hp('9%')}}
+              style={{height: hp('8%'), width: hp('8%')}}
               onPress={() => {
                 navigation.dispatch(StackActions.replace('details'));
               }}>
@@ -133,7 +136,7 @@ const NextScreen = ({route}) => {
               onPress={() =>
                 getData(item.items[item.id - 1]?.Category, parseInt(item.id))
               }
-              style={{height: hp('9%'), width: hp('9%')}}>
+              style={{height: hp('8%'), width: hp('8%')}}>
               <Image
                 style={{height: '100%', width: '100%'}}
                 source={require('../../Assets4/btnnextcatg_normal.png')}
@@ -161,7 +164,7 @@ const NextScreen = ({route}) => {
               onPress={() =>
                 navigation.reset({index: 0, routes: [{name: 'home'}]})
               }
-              style={{height: hp('9%'), width: hp('9%')}}>
+              style={{height: hp('8%'), width: hp('8%')}}>
               <Image
                 style={{height: '100%', width: '100%'}}
                 source={require('../../Assets4/btnhome_normal.png')}
@@ -180,15 +183,17 @@ const NextScreen = ({route}) => {
             </Text>
           </View>
         </View>
-        <View style={{position: 'absolute', bottom: 0}}>
-          <BannerAd
-            unitId={Addsid.BANNER}
-            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: true,
-            }}
-          />
-        </View>
+        {!hasPurchased ? (
+          <View style={{position: 'absolute', bottom: 0}}>
+            <BannerAd
+              unitId={Addsid.BANNER}
+              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
+          </View>
+        ) : null}
       </ImageBackground>
     </SafeAreaView>
   );

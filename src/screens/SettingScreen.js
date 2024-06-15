@@ -11,7 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {height, width} from '../components/Diemenstions';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Switch from '../components/Switch';
 import {useDispatch, useSelector} from 'react-redux';
 import TrackPlayer from 'react-native-track-player';
@@ -41,9 +41,12 @@ import {
 } from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {IAPContext} from '../Context';
+import PurcahsdeModal from '../components/requestPurchase';
 const SettingScreen = props => {
   const pr = props.route.params.pr;
-
+  const {hasPurchased, requestPurchase, checkPurchases, visible, setVisible} =
+    useContext(IAPContext);
   const muted = useSelector(state => state.sound);
   const canlable = useSelector(state => state.cancle);
   const tablet = isTablet();
@@ -171,12 +174,28 @@ const SettingScreen = props => {
 
     return () => backHandler.remove();
   }, []);
+  const onClose = value => {
+    setVisible(value);
+  };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
       <ImageBackground
         style={{flex: 1}}
         source={require('../../Assets4/settingscreen.png')}>
         <Header onPress2={() => setMute(!mute)} mute={mute} />
+        {!hasPurchased ? (
+          <PurcahsdeModal
+            onPress={async () => {
+              requestPurchase();
+              setVisible(false);
+            }}
+            onClose={onClose}
+            visible={visible}
+            onRestore={() => {
+              checkPurchases(true);
+            }}
+          />
+        ) : null}
         <ScrollView>
           <View
             style={[
@@ -186,8 +205,35 @@ const SettingScreen = props => {
             <ImageBackground
               style={{flex: 1}}
               source={require('../../Assets4/settingpagebase.png')}>
+              {!hasPurchased ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    setVisible(true);
+                  }}
+                  style={{
+                    height: hp(7.5),
+                    marginTop: '3%',
+                    width: '80%',
+                    alignSelf: 'center',
+                  }}>
+                  <Image
+                    style={{height: '100%', width: '100%'}}
+                    source={require('../../Assets4/upgrade.png')}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              ) : null}
               <View
-                style={{marginTop: tablet ? '7%' : '12%', marginLeft: '5%'}}>
+                style={{
+                  marginTop: tablet
+                    ? hasPurchased
+                      ? '5%'
+                      : '1%'
+                    : hasPurchased
+                    ? '10%'
+                    : null,
+                  marginLeft: '5%',
+                }}>
                 <Switch
                   text="Question mode"
                   style={styles.sw}
@@ -250,6 +296,7 @@ const SettingScreen = props => {
               flexDirection: 'row',
               justifyContent: 'space-between',
               marginHorizontal: '10%',
+              marginTop: hasPurchased ? '8%' : 0,
             }}>
             <TouchableOpacity
               onPress={async () => {
@@ -280,15 +327,17 @@ const SettingScreen = props => {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        <View style={{position: 'relative', bottom: 0}}>
-          <BannerAd
-            unitId={Addsid.BANNER}
-            sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: true,
-            }}
-          />
-        </View>
+        {!hasPurchased ? (
+          <View style={{position: 'relative', bottom: 0}}>
+            <BannerAd
+              unitId={Addsid.BANNER}
+              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
+          </View>
+        ) : null}
       </ImageBackground>
     </SafeAreaView>
   );

@@ -98,8 +98,9 @@ android {
         applicationId "com.eFlashEnglish"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 52
-        versionName "5.8"
+        versionCode 53
+        versionName "5.9"
+        missingDimensionStrategy "store", "play"
     }
 
     splits {
