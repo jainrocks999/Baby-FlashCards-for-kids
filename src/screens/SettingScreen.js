@@ -200,7 +200,7 @@ const SettingScreen = props => {
           <View
             style={[
               styles.settingContainer,
-              {marginTop: tablet ? '25%' : '30%'},
+              {marginTop: tablet ? '22%' : '30%'},
             ]}>
             <ImageBackground
               style={{flex: 1}}
@@ -212,7 +212,7 @@ const SettingScreen = props => {
                   }}
                   style={{
                     height: hp(7.5),
-                    marginTop: '3%',
+                    marginTop: '2%',
                     width: '80%',
                     alignSelf: 'center',
                   }}>
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   settingContainer: {
     borderWidth: 2,
     marginTop: '40%',
-    height: height / 2,
+    height: isTablet() ? height / 1.9 : height / 2,
     margin: '5%',
   },
   sw: {
