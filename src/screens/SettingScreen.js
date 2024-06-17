@@ -228,7 +228,7 @@ const SettingScreen = props => {
                   marginTop: tablet
                     ? hasPurchased
                       ? '5%'
-                      : '1%'
+                      : '-1%'
                     : hasPurchased
                     ? '10%'
                     : null,

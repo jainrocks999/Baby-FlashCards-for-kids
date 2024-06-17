@@ -1,7 +1,7 @@
 import React, {createContext, useState, useEffect} from 'react';
 import * as RNIap from 'react-native-iap';
 import {constants} from '../constansts';
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const IAPContext = createContext();
@@ -123,7 +123,17 @@ const IAPProvider = ({children}) => {
 
   const requestPurchase = async () => {
     try {
-      const pucrs = await RNIap.requestPurchase({skus: constants.productSkus});
+      const skus = {
+        ...Platform.select({
+          android: {
+            skus: constants.productSkus,
+          },
+          ios: {
+            sku: constants.productSkus[0],
+          },
+        }),
+      };
+      const pucrs = await RNIap.requestPurchase(skus);
     } catch (error) {
       Alert.alert('Message', error.message);
       console.log('this siss error', error);

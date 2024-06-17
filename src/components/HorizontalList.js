@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, FlatList, Linking} from 'react-native';
+import {View, Text, FlatList, Linking, Platform} from 'react-native';
 import Card from './Card';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -52,9 +52,14 @@ const HorizontalList = ({items}) => {
       Linking.openURL(
         cat == 'link'
           ? 'https://babyflashcards.com/apps.html'
-          : 'https://play.google.com/store/apps/details?id=com.eFlashEnglish&pli=1',
+          : Platform.select({
+              android:
+                'https://play.google.com/store/apps/details?id=com.eFlashEnglish&pli=1',
+              ios: 'https://apps.apple.com/us/app/baby-flash-cards-500-words/id378668742',
+            }),
       );
     }
+    //
   };
 
   const goTo = cat => {
