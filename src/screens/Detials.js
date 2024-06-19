@@ -262,7 +262,7 @@ const Detials = props => {
             style={[
               styles.btnContainer,
               !setting.Swipe ? {flexDirection: 'row'} : null,
-              {bottom: hasPurchased ? '5%' : '9%'},
+              {bottom: hasPurchased ? '3%' : '3%'},
             ]}>
             {!setting.Swipe ? (
               <TouchableOpacity
@@ -377,4 +377,3 @@ const styles = StyleSheet.create({
     margin: '1%',
   },
 });
-['zaju', 'bazu', 'sazu', 'raju'];
