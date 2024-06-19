@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
   SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import {height, width} from '../components/Diemenstions';
 import React, {useContext, useEffect, useState} from 'react';
@@ -179,6 +180,7 @@ const SettingScreen = props => {
   };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
+      <StatusBar backgroundColor={'#73cbea'} />
       <ImageBackground
         style={{flex: 1}}
         source={require('../../Assets4/settingscreen.png')}>
