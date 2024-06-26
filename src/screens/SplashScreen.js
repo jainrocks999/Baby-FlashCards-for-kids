@@ -1,4 +1,4 @@
-import {View, Text, Image, SafeAreaView} from 'react-native';
+import {View, Text, Image, SafeAreaView, StatusBar} from 'react-native';
 import React, {startTransition, useEffect} from 'react';
 import {useNavigation, StackActions} from '@react-navigation/native';
 
@@ -11,6 +11,7 @@ const SplashScreen = () => {
   });
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#abdbe3'}}>
+      <StatusBar backgroundColor={'#d9f7ff'} />
       <View style={{flex: 1, marginHorizontal: 1}}>
         <Image
           resizeMode="stretch"

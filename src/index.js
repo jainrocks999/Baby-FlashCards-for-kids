@@ -1,10 +1,9 @@
 import {
-  StyleSheet,
-  Text,
-  View,
   AppState,
   BackHandler,
   LogBox,
+  ToastAndroid,
+  Platform,
 } from 'react-native';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import MyStack from './components/MyStack';
@@ -12,6 +11,7 @@ import MyStack from './components/MyStack';
 import {AdEventType, InterstitialAd} from 'react-native-google-mobile-ads';
 import {Addsid} from './screens/ads';
 import {IAPContext} from './Context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Root = () => {
   LogBox.ignoreAllLogs();
@@ -20,6 +20,7 @@ const Root = () => {
   const interstitial = InterstitialAd.createForAdRequest(Addsid.Interstitial, {
     requestNonPersonalizedAdsOnly: true,
   });
+  const doublePressTimeout = useRef(null);
 
   const [appStateVisible, setAppStateVisible] = useState(false);
   const [count, setCount] = useState(1);
@@ -43,19 +44,32 @@ const Root = () => {
   }, []);
   useEffect(() => {}, [appStateVisible]);
 
-  function handleBackButtonClick() {
-    console.log('tjhisisisi', hasPurchased);
-    if (hasPurchased) {
-      showAdd1();
-    } else {
-      BackHandler.exitApp();
-    }
+  async function handleBackButtonClick() {
+    const DOUBLE_PRESS_DELAY = 2000;
+    const currentTime = Date.now();
 
-    return true;
+    if (
+      doublePressTimeout.current &&
+      doublePressTimeout.current + DOUBLE_PRESS_DELAY >= currentTime
+    ) {
+      const purchase = await AsyncStorage.getItem('IN_APP_PURCHASE');
+      if (purchase) {
+        console.log(purchase);
+        BackHandler.exitApp();
+      } else {
+        showAdd1();
+      }
+      return true;
+    } else {
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Press again to exit', ToastAndroid.SHORT);
+      }
+      doublePressTimeout.current = currentTime;
+      return true;
+    }
   }
 
   const showAdd1 = () => {
-    alert('called');
     const unsubscribe = interstitial.addAdEventListener(
       AdEventType.LOADED,
       () => {

@@ -1,4 +1,10 @@
-import {StyleSheet, ImageBackground, View, SafeAreaView} from 'react-native';
+import {
+  StyleSheet,
+  ImageBackground,
+  View,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import HorizontalList from '../components/HorizontalList';
@@ -49,6 +55,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
+      <StatusBar backgroundColor={'#73cbea'} />
       <ImageBackground
         style={{flex: 1}}
         source={require('../../Assets4/bgnewcategory.png')}>

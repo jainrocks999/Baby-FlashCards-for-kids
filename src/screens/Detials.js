@@ -8,6 +8,7 @@ import {
   Alert,
   Platform,
   SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -205,6 +206,7 @@ const Detials = props => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'grey'}}>
+      <StatusBar backgroundColor={'grey'} />
       <GestureRecognizer
         style={{flex: 1}}
         onSwipeLeft={() =>
