@@ -17,7 +17,7 @@ import {QuestionMode} from '../reduxToolkit/Slice3';
 import {BannerAdSize, BannerAd} from 'react-native-google-mobile-ads';
 import {Addsid} from './ads';
 import {IAPContext} from '../Context';
-import PurcahsdeModal from '../components/requestPurchase';
+import PurcahsdeModal from '../components/PurchaseModal';
 const db = SQLite.openDatabase({
   name: 'eFlashEngishinappnew.db',
   createFromLocation: 1,

@@ -43,7 +43,7 @@ import {
 import {Addsid} from './ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IAPContext} from '../Context';
-import PurcahsdeModal from '../components/requestPurchase';
+import PurcahsdeModal from '../components/PurchaseModal';
 const SettingScreen = props => {
   const pr = props.route.params.pr;
   const {hasPurchased, requestPurchase, checkPurchases, visible, setVisible} =
