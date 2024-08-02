@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 const productSkus = Platform.select({
-  android: ['eflash_upgrade'],
-  ios: ['com.eflash.eFlash.proupgrade'],
+  android: ['mandarin_in_ads_product'],
+  ios: ['com.eflashapps.eflashchinese.proupgrade'],
 });
 export const constants = {
   productSkus,
