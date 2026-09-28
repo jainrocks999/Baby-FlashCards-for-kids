@@ -1,60 +1,45 @@
 import {
   View,
-  Text,
   Image,
   TouchableOpacity,
   BackHandler,
-  Alert,
   Platform,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
-import {height, width} from '../components/Diemenstions';
-import {StyleSheet} from 'react-native';
-import {setupPlayer} from '../components/Setup';
+import React, { useContext, useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { FlatList } from 'react-native-gesture-handler';
+import { height } from '../components/Diemenstions';
+import { StyleSheet } from 'react-native';
+import { setupPlayer } from '../components/Setup';
 import TrackPlayer from 'react-native-track-player';
-import {RightVOid, WrongVoid} from '../components/WrongVoid';
-import {StackActions, useNavigation} from '@react-navigation/native';
-import {useIsFocused} from '@react-navigation/native';
-import {addPagable} from '../reduxToolkit/Slicer6';
+import { RightVOid, WrongVoid } from '../components/WrongVoid';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {isTablet} from 'react-native-device-info';
-import {
-  TestIds,
-  InterstitialAd,
-  AdEventType,
-  GAMBannerAd,
-  BannerAdSize,
-  BannerAd,
-} from 'react-native-google-mobile-ads';
-import {Addsid} from './ads';
+import { isTablet } from 'react-native-device-info';
 import RNFS from 'react-native-fs';
-import {IAPContext} from '../Context';
-const authId = Addsid.Interstitial;
-const requestOption = {
-  requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing'],
-};
+import { IAPContext } from '../Context';
+import CustomBannerAdd from '../components/bannerAdd';
+import { showInterstitialAd } from '../components/Ads';
+
 const QuestionPage = props => {
-  const {hasPurchased} = useContext(IAPContext);
+  const { hasPurchased } = useContext(IAPContext);
 
   const path = Platform.select({
     android: 'asset:/files/',
     ios: RNFS.MainBundlePath + '/files/',
   });
-  const interstitial = InterstitialAd.createForAdRequest(authId, requestOption);
+
   const tablet = isTablet();
   const disapatch = useDispatch();
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
-      navigation.reset({index: 0, routes: [{name: 'home'}]});
+      navigation.reset({ index: 0, routes: [{ name: 'home' }] });
       return true;
     };
 
@@ -74,25 +59,14 @@ const QuestionPage = props => {
   const [wrong, setWrong] = useState([]);
   const [right, setRight] = useState(false);
   const data = useSelector(state => state.Items);
-  const showAdd = () => {
-    const unsubscribe = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        interstitial.show();
-      },
-    );
-    interstitial.load();
-    return unsubscribe;
-  };
-
   const IsPlay = async (item, index) => {
-    //  console.log('isPlay is fired')
     let isReady = await setupPlayer();
     await TrackPlayer.reset();
     setCount(count + 1);
 
     if (count > 8) {
-      setCount(0), !hasPurchased ? showAdd() : null;
+      setCount(0);
+      showInterstitialAd(hasPurchased);
     }
     let arr = [
       (track = {
@@ -106,8 +80,6 @@ const QuestionPage = props => {
         url: `${path}${item.Sound}`,
         title: item.Title,
         artist: 'eFlashApps',
-        // Load artwork from the file system:
-        //  artwork: require('../../asset2/clickon.mp3'),
         duration: null,
       }),
     ];
@@ -208,20 +180,21 @@ const QuestionPage = props => {
       fromDetails: false,
       fromQuestion: false,
     });
-    navigation.dispatch(StackActions.push('setting', {pr: 'question'}));
+    navigation.dispatch(StackActions.push('setting', { pr: 'question' }));
   };
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'grey'}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'grey' }}>
       <StatusBar backgroundColor={'grey'} />
-      <View style={{height: '100%', width: '100%'}}>
-        <View style={{flex: 1, backgroundColor: 'white'}}>
+      <View style={{ height: '100%', width: '100%' }}>
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
           <View style={styles.header}>
             <TouchableOpacity
               onPress={async () => {
                 await TrackPlayer.reset();
 
-                navigation.reset({index: 0, routes: [{name: 'home'}]});
-              }}>
+                navigation.reset({ index: 0, routes: [{ name: 'home' }] });
+              }}
+            >
               <Image
                 style={styles.icon}
                 resizeMode="contain"
@@ -238,7 +211,8 @@ const QuestionPage = props => {
             <TouchableOpacity
               onPress={async () => {
                 gotoSettings();
-              }}>
+              }}
+            >
               <Image
                 style={styles.icon}
                 source={require('../../Assets4/btnsetting_normal.png')}
@@ -256,12 +230,13 @@ const QuestionPage = props => {
               alignSelf: 'center',
               alignItems: 'center',
               paddingLeft: '2%',
-            }}>
+            }}
+          >
             <FlatList
               data={rendomdat}
               numColumns={2}
               keyExtractor={item => item.ID}
-              renderItem={({item, index}) => {
+              renderItem={({ item, index }) => {
                 return (
                   <TouchableOpacity
                     onPress={() => {
@@ -275,10 +250,11 @@ const QuestionPage = props => {
                       }
                     }}
                     style={[!tablet ? styles.mobileView : styles.tabView]}
-                    disabled={right || wrong.includes(index) ? true : false}>
+                    disabled={right || wrong.includes(index) ? true : false}
+                  >
                     <Image
-                      style={{height: '100%', width: '100%'}}
-                      source={{uri: `${path}${item.Image}`}}
+                      style={{ height: '100%', width: '100%' }}
+                      source={{ uri: `${path}${item.Image}` }}
                       resizeMode="contain"
                     />
                     {wrong.includes(index) ? (
@@ -299,17 +275,7 @@ const QuestionPage = props => {
             />
           </View>
         </View>
-        {!hasPurchased ? (
-          <View style={{bottom: 0, borderWidth: 0, backgroundColor: 'white'}}>
-            <BannerAd
-              unitId={Addsid.BANNER}
-              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-              requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-              }}
-            />
-          </View>
-        ) : null}
+        <CustomBannerAdd hasPurchased={hasPurchased} />
       </View>
     </SafeAreaView>
   );

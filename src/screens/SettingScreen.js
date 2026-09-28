@@ -1,27 +1,24 @@
 import {
   View,
-  Text,
-  ImageBackground,
   TouchableOpacity,
   Image,
   StyleSheet,
   BackHandler,
   Alert,
   ScrollView,
-  SafeAreaView,
   StatusBar,
+  ImageBackground,
 } from 'react-native';
-import {height, width} from '../components/Diemenstions';
-import React, {useContext, useEffect, useState} from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { height, width } from '../components/Diemenstions';
+import React, { useContext, useEffect, useState } from 'react';
 import Switch from '../components/Switch';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TrackPlayer from 'react-native-track-player';
-import {QuestionMode} from '../reduxToolkit/Slice3';
-import {addSetting} from '../reduxToolkit/Slice2';
-import {StackActions, useNavigation} from '@react-navigation/native';
+import { QuestionMode } from '../reduxToolkit/Slice3';
+import { addSetting } from '../reduxToolkit/Slice2';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
-import {addCancleble} from '../reduxToolkit/Slice5';
-import {addPagable} from '../reduxToolkit/Slicer6';
 var SQLite = require('react-native-sqlite-storage');
 import {
   heightPercentageToDP as hp,
@@ -31,30 +28,21 @@ const db = SQLite.openDatabase({
   name: 'eFlashEngishinappnew.db',
   createFromLocation: 1,
 });
-import {isTablet} from 'react-native-device-info';
-import {
-  TestIds,
-  InterstitialAd,
-  AdEventType,
-  GAMBannerAd,
-  BannerAdSize,
-  BannerAd,
-} from 'react-native-google-mobile-ads';
-import {Addsid} from './ads';
+import { isTablet } from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {IAPContext} from '../Context';
+import { IAPContext } from '../Context';
 import PurcahsdeModal from '../components/PurchaseModal';
+import CustomBannerAdd from '../components/bannerAdd';
+
 const SettingScreen = props => {
   const pr = props.route.params.pr;
-  const {hasPurchased, requestPurchase, checkPurchases, visible, setVisible} =
+  const { hasPurchased, requestPurchase, checkPurchases, visible, setVisible } =
     useContext(IAPContext);
   const muted = useSelector(state => state.sound);
-  const canlable = useSelector(state => state.cancle);
   const tablet = isTablet();
   const [mute, setMute] = useState(muted);
   const quesion = useSelector(state => state.question);
   const setting = useSelector(state => state.setting);
-  const backSound = useSelector(state => state.backsound);
   const Navigation = useNavigation();
   const dispatch = useDispatch();
   const [togleSwitch, setToggleSwich] = useState({
@@ -68,9 +56,9 @@ const SettingScreen = props => {
   const [questionMode, setquestion] = useState(quesion);
   const handleSwitch = (name, value) => {
     if (questionMode) {
-      alert('This setting is disabled when quesion mode is enabled');
+      Alert.alert('This setting is disabled when quesion mode is enabled');
     } else {
-      setToggleSwich(prev => ({...prev, [name]: !value}));
+      setToggleSwich(prev => ({ ...prev, [name]: !value }));
     }
   };
   const Save = async () => {
@@ -111,7 +99,7 @@ const SettingScreen = props => {
         });
       }
     } else {
-      Navigation.reset({index: 0, routes: [{name: 'home'}]});
+      Navigation.reset({ index: 0, routes: [{ name: 'home' }] });
     }
     await TrackPlayer.reset();
   };
@@ -156,7 +144,7 @@ const SettingScreen = props => {
     const backAction = async () => {
       await TrackPlayer.reset();
       if (pr == 'home') {
-        Navigation.reset({index: 0, routes: [{name: 'home'}]});
+        Navigation.reset({ index: 0, routes: [{ name: 'home' }] });
       } else {
         dispatch({
           type: 'backSoundFromquestions/playWhenThePage',
@@ -179,11 +167,13 @@ const SettingScreen = props => {
     setVisible(value);
   };
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
-      <StatusBar backgroundColor={'#73cbea'} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#93e9ff' }}>
       <ImageBackground
-        style={{flex: 1}}
-        source={require('../../Assets4/settingscreen.png')}>
+        style={{ flex: 1 }}
+        source={require('../../Assets4/settingscreen.png')}
+      >
+        <StatusBar backgroundColor={'#93e9ff'} />
+
         <Header onPress2={() => setMute(!mute)} mute={mute} />
         {!hasPurchased ? (
           <PurcahsdeModal
@@ -202,11 +192,13 @@ const SettingScreen = props => {
           <View
             style={[
               styles.settingContainer,
-              {marginTop: tablet ? '22%' : '30%'},
-            ]}>
+              { marginTop: tablet ? '22%' : '30%' },
+            ]}
+          >
             <ImageBackground
-              style={{flex: 1}}
-              source={require('../../Assets4/settingpagebase.png')}>
+              style={{ flex: 1 }}
+              source={require('../../Assets4/settingpagebase.png')}
+            >
               {!hasPurchased ? (
                 <TouchableOpacity
                   onPress={() => {
@@ -217,9 +209,10 @@ const SettingScreen = props => {
                     marginTop: '2%',
                     width: '80%',
                     alignSelf: 'center',
-                  }}>
+                  }}
+                >
                   <Image
-                    style={{height: '100%', width: '100%'}}
+                    style={{ height: '100%', width: '100%' }}
                     source={require('../../Assets4/upgrade.png')}
                     resizeMode="contain"
                   />
@@ -235,7 +228,8 @@ const SettingScreen = props => {
                     ? '10%'
                     : null,
                   marginLeft: '5%',
-                }}>
+                }}
+              >
                 <Switch
                   text="Question mode"
                   style={styles.sw}
@@ -299,11 +293,12 @@ const SettingScreen = props => {
               justifyContent: 'space-between',
               marginHorizontal: '10%',
               marginTop: hasPurchased ? '8%' : 0,
-            }}>
+            }}
+          >
             <TouchableOpacity
               onPress={async () => {
                 if (pr == 'home') {
-                  Navigation.reset({index: 0, routes: [{name: 'home'}]});
+                  Navigation.reset({ index: 0, routes: [{ name: 'home' }] });
                 } else {
                   await TrackPlayer.reset();
                   dispatch({
@@ -313,33 +308,24 @@ const SettingScreen = props => {
                   });
                   Navigation.goBack();
                 }
-              }}>
+              }}
+            >
               <Image
-                style={{height: hp(7), width: wp(35)}}
+                style={{ height: hp(7), width: wp(35) }}
                 source={require('../../Assets4/btncancel_normal.png')}
                 resizeMode="contain"
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => Save()}>
               <Image
-                style={{height: hp(7), width: wp(35)}}
+                style={{ height: hp(7), width: wp(35) }}
                 source={require('../../Assets4/btnsave_normal.png')}
                 resizeMode="contain"
               />
             </TouchableOpacity>
           </View>
         </ScrollView>
-        {!hasPurchased ? (
-          <View style={{position: 'relative', bottom: 0}}>
-            <BannerAd
-              unitId={Addsid.BANNER}
-              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-              requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-              }}
-            />
-          </View>
-        ) : null}
+        <CustomBannerAdd hasPurchased={hasPurchased} />
       </ImageBackground>
     </SafeAreaView>
   );

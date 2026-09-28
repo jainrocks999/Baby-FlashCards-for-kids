@@ -1,7 +1,7 @@
-import {View, Text, Image, SafeAreaView, StatusBar} from 'react-native';
+import {View, Text, Image,  StatusBar} from 'react-native';
 import React, {startTransition, useEffect} from 'react';
 import {useNavigation, StackActions} from '@react-navigation/native';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const SplashScreen = () => {
   const navigation = useNavigation();
   useEffect(() => {
@@ -10,7 +10,7 @@ const SplashScreen = () => {
     }, 2000);
   });
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#abdbe3'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#d9f7ff'}}>
       <StatusBar backgroundColor={'#d9f7ff'} />
       <View style={{flex: 1, marginHorizontal: 1}}>
         <Image

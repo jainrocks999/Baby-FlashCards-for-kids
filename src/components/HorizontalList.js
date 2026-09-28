@@ -55,7 +55,7 @@ const HorizontalList = ({items}) => {
           : Platform.select({
               android:
                 'https://play.google.com/store/apps/details?id=com.eFlashEnglish&pli=1',
-              ios: 'https://apps.apple.com/us/app/baby-flash-cards-500-words/id378668742',
+              ios: 'https://apps.apple.com/in/app/baby-flash-cards-500-words/id378668742',
             }),
       );
     }

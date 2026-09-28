@@ -5,56 +5,39 @@ import {
   TouchableOpacity,
   View,
   BackHandler,
-  Alert,
   Platform,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {height, width} from '../components/Diemenstions';
+import React, { useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { height } from '../components/Diemenstions';
 import TrackPlayer from 'react-native-track-player';
-import {setupPlayer} from '../components/Setup';
+import { setupPlayer } from '../components/Setup';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import {StackActions, useNavigation} from '@react-navigation/native';
-import {addPagable} from '../reduxToolkit/Slicer6';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { addPagable } from '../reduxToolkit/Slicer6';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {isTablet} from 'react-native-device-info';
-import {
-  InterstitialAd,
-  AdEventType,
-  GAMBannerAd,
-  BannerAdSize,
-  BannerAd,
-} from 'react-native-google-mobile-ads';
-import {Addsid} from './ads';
+import { isTablet } from 'react-native-device-info';
 import RNFS from 'react-native-fs';
-import {IAPContext} from '../Context';
-
-const adUnit = Addsid.Interstitial;
-const requestOption = {
-  requestNonPersonalizedAdsOnly: true,
-};
-const Detials = props => {
-  const {hasPurchased} = useContext(IAPContext);
-
+import { IAPContext } from '../Context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomBannerAdd from '../components/bannerAdd';
+import { showInterstitialAd } from '../components/Ads';
+const Detials = () => {
+  const { hasPurchased } = useContext(IAPContext);
   const tablet = isTablet();
   const disapatch = useDispatch();
   const backSound = useSelector(state => state.backsound);
-
-  const interstitial = InterstitialAd.createForAdRequest(adUnit, requestOption);
   useEffect(() => {
     const backAction = async () => {
       await TrackPlayer.reset();
       disapatch(addPagable(false));
-
-      navigation.reset({index: 0, routes: [{name: 'home'}]});
+      navigation.reset({ index: 0, routes: [{ name: 'home' }] });
       return true;
     };
-
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       backAction,
@@ -79,16 +62,7 @@ const Detials = props => {
     ios: RNFS.MainBundlePath + '/files/',
   });
 
-  const getAdd = () => {
-    const unsubscribe = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        interstitial.show();
-      },
-    );
-    interstitial.load();
-    return unsubscribe;
-  };
+ 
   function shuffle(array) {
     let currentIndex = array.length;
     let temporaryValue, randomIndex;
@@ -136,10 +110,15 @@ const Detials = props => {
     let Titel;
     let track;
     let track2;
-    let ActualSound;
+    let ActualSound='';
     let y = data.length;
     if (count >= 0 && count <= y - 1) {
       ActualSound = newData[count].ActualSound;
+      if(ActualSound){
+        if(ActualSound.includes(" ")){
+          ActualSound.replace(" ","_")
+        }
+      }
       Imagess = `${path}${newData[count].Image}`;
       Titel = newData[count].Title;
       track = {
@@ -158,10 +137,11 @@ const Detials = props => {
         artwork: `${path}${newData[count].Sound}`,
         duration: null,
       };
+      console.log(track2.url)
     } else if (count < 0) {
       navigation.goBack();
     } else {
-      !hasPurchased ? getAdd() : null;
+       showInterstitialAd(hasPurchased)
       navigation.dispatch(StackActions.replace('next'));
     }
     setImages(Imagess);
@@ -205,22 +185,24 @@ const Detials = props => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'grey'}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'grey' }}>
       <StatusBar backgroundColor={'grey'} />
       <GestureRecognizer
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         onSwipeLeft={() =>
           setting.Swipe && count != data.length && setCount(count + 1)
         }
-        onSwipeRight={() => setting.Swipe && count > 0 && setCount(count - 1)}>
-        <View style={{flex: 1, backgroundColor: 'white'}}>
+        onSwipeRight={() => setting.Swipe && count > 0 && setCount(count - 1)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
           <View style={styles.header}>
             <TouchableOpacity
               onPress={async () => {
                 await TrackPlayer.reset();
 
-                navigation.reset({index: 0, routes: [{name: 'home'}]});
-              }}>
+                navigation.reset({ index: 0, routes: [{ name: 'home' }] });
+              }}
+            >
               <Image
                 style={styles.icon}
                 source={require('../../Assets4/btnhome_normal.png')}
@@ -237,9 +219,10 @@ const Detials = props => {
                   fromQuestion: false,
                 });
                 navigation.dispatch(
-                  StackActions.push('setting', {pr: 'details'}),
+                  StackActions.push('setting', { pr: 'details' }),
                 );
-              }}>
+              }}
+            >
               <Image
                 style={styles.icon}
                 source={require('../../Assets4/btnsetting_normal.png')}
@@ -256,22 +239,24 @@ const Detials = props => {
                   alignItems: 'center',
                 }}
                 resizeMode="contain"
-                source={{uri: Images}}
+                source={{ uri: Images }}
               />
             )}
           </View>
           <View
             style={[
               styles.btnContainer,
-              !setting.Swipe ? {flexDirection: 'row'} : null,
-              {bottom: hasPurchased ? '3%' : '3%'},
-            ]}>
+              !setting.Swipe ? { flexDirection: 'row' } : null,
+              { bottom: hasPurchased ? '3%' : '3%' },
+            ]}
+          >
             {!setting.Swipe ? (
               <TouchableOpacity
                 onPress={async () => {
                   setCount(count - 1);
                 }}
-                disabled={count <= 0 ? true : false}>
+                disabled={count <= 0 ? true : false}
+              >
                 <Image
                   style={[
                     styles.btn,
@@ -288,9 +273,10 @@ const Detials = props => {
             <TouchableOpacity
               onPress={() => {
                 paly();
-              }}>
+              }}
+            >
               <Image
-                style={[styles.btn2, setting.Swipe && {alignSelf: 'center'}]}
+                style={[styles.btn2, setting.Swipe && { alignSelf: 'center' }]}
                 source={require('../../Assets4/btnrepeat_normal.png')}
                 resizeMode="contain"
               />
@@ -300,7 +286,8 @@ const Detials = props => {
                 onPress={async () => {
                   setCount(count + 1);
                 }}
-                disabled={count === data.length ? true : false}>
+                disabled={count === data.length ? true : false}
+              >
                 <Image
                   style={[
                     styles.btn,
@@ -316,17 +303,7 @@ const Detials = props => {
             ) : null}
           </View>
         </View>
-        {!hasPurchased ? (
-          <View>
-            <BannerAd
-              unitId={Addsid.BANNER}
-              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-              requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-              }}
-            />
-          </View>
-        ) : null}
+        <CustomBannerAdd hasPurchased={hasPurchased} />
       </GestureRecognizer>
     </SafeAreaView>
   );

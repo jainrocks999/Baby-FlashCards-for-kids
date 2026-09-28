@@ -1,8 +1,4 @@
 import {
-  StyleSheet,
-  ImageBackground,
-  View,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
@@ -14,10 +10,11 @@ import {useNavigation} from '@react-navigation/native';
 var SQLite = require('react-native-sqlite-storage');
 import {addSetting} from '../reduxToolkit/Slice2';
 import {QuestionMode} from '../reduxToolkit/Slice3';
-import {BannerAdSize, BannerAd} from 'react-native-google-mobile-ads';
-import {Addsid} from './ads';
 import {IAPContext} from '../Context';
 import PurcahsdeModal from '../components/PurchaseModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ImageBackground from '../components/ImageBackgrond';
+import CustomBannerAdd from '../components/bannerAdd';
 const db = SQLite.openDatabase({
   name: 'eFlashEngishinappnew.db',
   createFromLocation: 1,
@@ -54,10 +51,9 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#73cbea'}}>
-      <StatusBar backgroundColor={'#73cbea'} />
+    <SafeAreaView style={{flex: 1, backgroundColor: '#7ee3ff'}}>
+      <StatusBar backgroundColor={'#7ee3ff'} />
       <ImageBackground
-        style={{flex: 1}}
         source={require('../../Assets4/bgnewcategory.png')}>
         <Header
           onPress2={() => setMute(!mute)}
@@ -83,17 +79,7 @@ const Home = () => {
           />
         ) : null}
         <HorizontalList items={MyData} />
-        {!hasPurchased ? (
-          <View style={{position: 'relative', bottom: 0}}>
-            <BannerAd
-              unitId={Addsid.BANNER}
-              sizes={[BannerAdSize.ANCHORED_ADAPTIVE_BANNER]}
-              requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-              }}
-            />
-          </View>
-        ) : null}
+         <CustomBannerAdd hasPurchased={hasPurchased} />
       </ImageBackground>
     </SafeAreaView>
   );

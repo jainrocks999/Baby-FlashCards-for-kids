@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 import {TestIds} from 'react-native-google-mobile-ads';
-export const Addsid = {
+export const addids = {
   ...Platform.select({
     ios: {
       BANNER: 'ca-app-pub-3339897183017333/8174955586',
